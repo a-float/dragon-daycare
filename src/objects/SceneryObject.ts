@@ -1,9 +1,12 @@
 import * as THREE from "three";
-import { MapState } from "../gameState";
+import { MapState } from "../gameState/gameState";
+import { Disposable } from "./disposable";
 
 import WallObject from "./WallObject";
 
-class SceneryObject extends THREE.Group {
+class SceneryObject extends THREE.Group implements Disposable {
+  disposableChildren: Disposable[] = [];
+
   constructor(mapState: MapState) {
     super();
 
@@ -11,8 +14,17 @@ class SceneryObject extends THREE.Group {
       const x = i % mapState.width;
       const y = Math.floor(i / mapState.height);
 
-      this.add(new WallObject(x, y));
+      const tile = mapState.tiles[i];
+      if (tile.isWall) {
+        const obj = new WallObject(x, y);
+        this.add(obj);
+        this.disposableChildren.push(obj);
+      }
     }
+  }
+
+  dispose() {
+    this.disposableChildren.forEach((c) => c.dispose());
   }
 }
 

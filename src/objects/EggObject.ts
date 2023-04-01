@@ -1,10 +1,7 @@
 import * as THREE from "three";
 import loadSvg from "../utils/loadSvg";
 
-const ASSETS = Promise.all([
-  loadSvg("public/egg_1-01.svg"),
-  loadSvg("/bananas.svg"),
-]);
+const ASSETS = Promise.all([loadSvg("/egg_1-01.svg"), loadSvg("/bananas.svg")]);
 
 class EggObject extends THREE.Group {
   constructor([eggSvg]: Awaited<typeof ASSETS>) {

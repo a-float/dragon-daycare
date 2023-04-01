@@ -1,15 +1,20 @@
 import z from "zod";
+import { UserEvent } from "./userEvent";
 
-type TileCoord = z.infer<typeof TileCoord>;
-const TileCoord = z.tuple([z.number().int(), z.number().int()]);
-type TurnDirection = z.infer<typeof TurnDirection>;
-const TurnDirection = z.union([
+export const TICK_INVERVAL = 200;
+
+export type TileCoord = z.infer<typeof TileCoord>;
+export const TileCoord = z.tuple([z.number().int(), z.number().int()]);
+
+export type TurnDirection = z.infer<typeof TurnDirection>;
+export const TurnDirection = z.union([
   z.literal(0),
   z.literal(1),
   z.literal(2),
   z.literal(3),
 ]);
-const ObjectID = z.string();
+
+export const ObjectID = z.string();
 
 export const MoveState = z.union([
   z.object({
@@ -41,6 +46,7 @@ export const GameState = z.object({
   eggs: z.array(EggState),
 });
 
+export type TileState = z.infer<typeof TileState>;
 export const TileState = z.object({ isWall: z.boolean() });
 
 export type MapState = z.infer<typeof MapState>;
@@ -73,19 +79,6 @@ export function createGameState(): GameState {
   };
 }
 
-type UserEvent = z.infer<typeof UserEvent>;
-const UserEvent = z.union([
-  z.object({
-    type: z.literal("move"),
-    player: z.number().int(),
-    dir: TurnDirection,
-  }),
-  z.object({
-    type: z.literal("action"),
-    player: z.number().int(),
-  }),
-]);
-
 const getNextPos = (pos: TileCoord, dir: TurnDirection): TileCoord => {
   const diff = { x: 0, y: 0 };
   if (dir === 0) {
@@ -97,6 +90,7 @@ const getNextPos = (pos: TileCoord, dir: TurnDirection): TileCoord => {
   } else {
     diff.x = -1;
   }
+
   return [pos[0] + diff.y, pos[1] + diff.x];
 };
 
@@ -119,13 +113,19 @@ const applyUserEvent = (
   event: UserEvent
 ) => {
   const player = gameState.players[event.player];
+
   if (player.isMoving) return;
 
   if (event.type === "move") {
     player.dir = event.dir;
+
     const newPos = getNextPos(player.pos, event.dir);
-    if (canStandOnCoords(mapState, newPos)) player.isMoving = true;
+
+    if (canStandOnCoords(mapState, newPos)) {
+      player.isMoving = true;
+    }
   }
+
   if (event.type === "action") {
     console.log("Action performed");
   }
@@ -139,6 +139,7 @@ const movePlayers = (gameState: GameState, mapState: MapState): number[] => {
     const next = getNextPos(player.pos, player.dir);
     return canStandOnCoords(mapState, next) ? next : player.pos;
   });
+
   gameState.players.forEach((player, i) => {
     if (player.isMoving) {
       const next = nextCoords[i];
@@ -174,16 +175,19 @@ const movePlayers = (gameState: GameState, mapState: MapState): number[] => {
       }
     }
   });
+
   return playersThatMoved;
 };
 
-const updateState = (
+export const updateState = (
   gameState: GameState,
   mapState: MapState,
   events: UserEvent[]
 ) => {
   events.forEach((e) => applyUserEvent(gameState, mapState, e));
+
   const playersThatMoved = movePlayers(gameState, mapState);
+
   playersThatMoved.forEach((playerId) => {
     console.log(
       `Player ${playerId} has moved in direction ${gameState.players[playerId].dir}`

@@ -8,7 +8,9 @@ import KeyboardSystem from "./systems/KeyboardSystem";
 import { makeEggObject } from "./objects/EggObject";
 import EggEntity from "./entities/EggEntity";
 import GameAnchor from "./objects/GameAnchor";
-import { makeSceneryObject } from "./objects/SceneryObject";
+import SceneryObject, { makeSceneryObject } from "./objects/SceneryObject";
+import LocalGameStateProvider from "./gameState/localGameStateProvider";
+import AbstractGameStateProvider from "./gameState/abstractGameStateProvider";
 
 const createPlayerMesh = (color: THREE.ColorRepresentation) => {
   const geometry = new THREE.BoxGeometry(1, 1, 1);
@@ -81,6 +83,9 @@ world.addEntity(player2);
 gameAnchor.add(player1Mesh);
 gameAnchor.add(player2Mesh);
 
+const gameStateProvider: AbstractGameStateProvider =
+  new LocalGameStateProvider();
+
 async function init() {
   // Egg
   const eggObj = await makeEggObject();
@@ -89,8 +94,21 @@ async function init() {
   world.addEntity(egg);
 
   // Scenery
-  // const scenery = makeSceneryObject({ width: 16, height: 16 });
-  // gameAnchor.add(scenery);
+  let scenery: SceneryObject | null = null;
+  gameStateProvider.subscribeMap(async (state) => {
+    if (scenery) {
+      gameAnchor.remove(scenery);
+      scenery.dispose();
+      scenery = null;
+    }
+
+    scenery = await makeSceneryObject(state);
+    gameAnchor.add(scenery);
+
+    // Setting up camera
+    camera.position.set(state.width / 2, state.height / 2, 0);
+    camera.scale.setScalar(10);
+  });
 }
 
 init();
