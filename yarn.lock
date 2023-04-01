@@ -132,6 +132,11 @@
   resolved "https://registry.yarnpkg.com/@types/webxr/-/webxr-0.5.1.tgz#4908349419104bd476a4252d04e4c3abb496748d"
   integrity sha512-xlFXPfgJR5vIuDefhaHuUM9uUgvPaXB6GKdXy2gdEh8gBWQZ2ul24AJz3foUd8NNKlSTQuWYJpCb1/pL81m1KQ==
 
+ecs-lib@^0.8.0-pre.2:
+  version "0.8.0-pre.2"
+  resolved "https://registry.yarnpkg.com/ecs-lib/-/ecs-lib-0.8.0-pre.2.tgz#d2fbe6fcf58f6e4fecaa5df19596d072b847299a"
+  integrity sha512-eG2WR4DkyxBY8SSpiNJWtESSVynxBUo/CPcsaY6kXtI62PFr2tXcfic7rGujjqj+tjbakXO5vZP8mb7fhpuAXw==
+
 esbuild@^0.17.5:
   version "0.17.14"
   resolved "https://registry.yarnpkg.com/esbuild/-/esbuild-0.17.14.tgz#d61a22de751a3133f3c6c7f9c1c3e231e91a3245"
@@ -265,3 +270,8 @@ vite@^4.2.0:
     rollup "^3.18.0"
   optionalDependencies:
     fsevents "~2.3.2"
+
+zod@^3.21.4:
+  version "3.21.4"
+  resolved "https://registry.yarnpkg.com/zod/-/zod-3.21.4.tgz#10882231d992519f0a10b5dd58a38c9dabbb64db"
+  integrity sha512-m46AKbrzKVzOzs/DZgVnG5H55N1sv1M8qZU3A8RIKbs3mrACDNeIOeilDymVb2HdmP8uwshOCF4uJ8uM9rCqJw==

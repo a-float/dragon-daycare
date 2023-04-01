@@ -1,5 +1,10 @@
 import "./style.css";
+import ECS from "ecs-lib";
 import * as THREE from "three";
+
+import controls from "./utils/controls";
+import PlayerEntity from "./entities/PlayerEntity";
+import KeyboardSystem from "./systems/KeyboardSystem";
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
@@ -16,14 +21,29 @@ document.body.appendChild(renderer.domElement);
 const geometry = new THREE.BoxGeometry(1, 1, 1);
 const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
 const cube = new THREE.Mesh(geometry, material);
-scene.add(cube);
+// scene.add(cube);
 
-camera.position.z = 5;
+camera.position.z = 10;
+camera.position.y = 5;
+camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+const playerMesh = cube;
+const world = new ECS();
+world.addSystem(new KeyboardSystem());
+const entity = new PlayerEntity(
+  playerMesh,
+  new THREE.Vector3(0, 0, 0),
+  controls.one
+);
+world.addEntity(entity);
+scene.add(playerMesh);
 
 function animate() {
   requestAnimationFrame(animate);
   renderer.render(scene, camera);
-  cube.rotation.x += 0.01;
-  cube.rotation.y += 0.01;
+  world.update();
+  // cube.rotation.x += 0.01;
+  // cube.rotation.y += 0.01;
 }
+
 animate();
