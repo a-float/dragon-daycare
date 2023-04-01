@@ -1,27 +1,44 @@
 import { Entity, System } from "ecs-lib";
+
 import KeyboardState from "../utils/KeyboardState";
-import { Object3DComponent } from "../components/Object3DComponent";
-import { SteerableComponent } from "../components/SteerableComponent";
+import {
+  SteerableComponent,
+  SteerControlsComponent,
+} from "../components/SteerableComponent";
+import AbstractGameStateProvider from "../gameState/abstractGameStateProvider";
+import { TurnDirection } from "../gameState/gameState";
 
 export default class KeyboardSystem extends System {
-  constructor() {
-    super([Object3DComponent.type, SteerableComponent.type]);
+  moveDir: TurnDirection | null = null;
+
+  constructor(private gameStateProvider: AbstractGameStateProvider) {
+    super([SteerControlsComponent.type, SteerableComponent.type]);
   }
 
-  update(time: number, delta: number, entity: Entity): void {
-    const object3D = Object3DComponent.oneFrom(entity).data;
-    const { speed, ...controls } = SteerableComponent.oneFrom(entity).data;
+  update(_time: number, _delta: number, entity: Entity): void {
+    const controls = SteerControlsComponent.oneFrom(entity).data;
+    const { controlsIndex } = SteerableComponent.oneFrom(entity).data;
 
-    const diff = delta * speed / 50;
+    const prevMoveDir = this.moveDir;
 
     if (KeyboardState.pressed(controls.right)) {
-      object3D.translateX(diff);
+      this.moveDir = 1;
     } else if (KeyboardState.pressed(controls.left)) {
-      object3D.translateX(-diff);
+      this.moveDir = 3;
     } else if (KeyboardState.pressed(controls.up)) {
-      object3D.translateZ(-diff);
+      this.moveDir = 0;
     } else if (KeyboardState.pressed(controls.down)) {
-      object3D.translateZ(diff);
+      this.moveDir = 2;
+    } else {
+      this.moveDir = null;
+    }
+
+    if (this.moveDir && this.moveDir !== prevMoveDir) {
+      this.gameStateProvider.sendEvent({
+        type: "move",
+        dir: this.moveDir,
+        player: controlsIndex,
+      });
     }
   }
 }

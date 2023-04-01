@@ -8,6 +8,8 @@ export type Controls = {
   action: string;
 };
 
-export type Steerable = Controls & { speed: number };
+export const SteerControlsComponent = Component.register<Controls>();
+
+export type Steerable = { controlsIndex: number };
 
 export const SteerableComponent = Component.register<Steerable>();

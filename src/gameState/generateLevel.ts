@@ -1,4 +1,4 @@
-import { MapState, TileState } from "./gameState";
+import { MapState, TileCoord, TileState } from "./gameState";
 
 function insert(mapState: MapState, x: number, y: number, tile: TileState) {
   let i = x + y * mapState.width;
@@ -25,6 +25,7 @@ function generateLevel(): MapState {
   const mapState: MapState = {
     width: 15,
     height: 15,
+    startPoints: [],
     tiles: [],
   };
 
@@ -41,13 +42,16 @@ function generateLevel(): MapState {
   }));
 
   // Entry points
-  const entryLeft = [1, Math.floor(mapState.height / 2)] as const;
+  const entryLeft = [1, Math.floor(mapState.height / 2)] as TileCoord;
   const entryRight = [
     mapState.width - 2,
     Math.floor(mapState.height / 2),
-  ] as const;
+  ] as TileCoord;
   insert(mapState, ...entryLeft, { isWall: false });
   insert(mapState, ...entryRight, { isWall: false });
+
+  mapState.startPoints.push(entryLeft);
+  mapState.startPoints.push(entryRight);
 
   // Obstacles
   const obstacleTop = [Math.floor(mapState.width / 2), 2] as const;

@@ -3,20 +3,19 @@ import ECS from "ecs-lib";
 import * as THREE from "three";
 
 import controls from "./utils/controls";
-import PlayerEntity from "./entities/PlayerEntity";
 import KeyboardSystem from "./systems/KeyboardSystem";
-import { makeEggObject } from "./objects/EggObject";
-import EggEntity from "./entities/EggEntity";
 import GameAnchor from "./objects/GameAnchor";
 import SceneryObject, { makeSceneryObject } from "./objects/SceneryObject";
 import LocalGameStateProvider from "./gameState/localGameStateProvider";
 import AbstractGameStateProvider from "./gameState/abstractGameStateProvider";
+import PlayerEntity from "./entities/PlayerEntity";
+import { makePlayerObject } from "./objects/PlayerObject";
 
-const createPlayerMesh = (color: THREE.ColorRepresentation) => {
-  const geometry = new THREE.BoxGeometry(1, 1, 1);
-  const material = new THREE.MeshBasicMaterial({ color });
-  return new THREE.Mesh(geometry, material);
-};
+// const createPlayerMesh = (color: THREE.ColorRepresentation) => {
+//   const geometry = new THREE.BoxGeometry(1, 1, 1);
+//   const material = new THREE.MeshBasicMaterial({ color });
+//   return new THREE.Mesh(geometry, material);
+// };
 
 // const webSocket = new WebSocket(url, protocols);
 
@@ -64,34 +63,34 @@ document.body.appendChild(renderer.domElement);
 const gameAnchor = new GameAnchor();
 scene.add(gameAnchor);
 
-const player1Mesh = createPlayerMesh("#cc2222");
-const player2Mesh = createPlayerMesh("#2222cc");
-const world = new ECS();
-world.addSystem(new KeyboardSystem());
-const player1 = new PlayerEntity(
-  player1Mesh,
-  new THREE.Vector3(-3, 0, 0),
-  controls.one
-);
-const player2 = new PlayerEntity(
-  player2Mesh,
-  new THREE.Vector3(3, 0, 0),
-  controls.two
-);
-world.addEntity(player1);
-world.addEntity(player2);
-gameAnchor.add(player1Mesh);
-gameAnchor.add(player2Mesh);
-
 const gameStateProvider: AbstractGameStateProvider =
   new LocalGameStateProvider();
 
+// const player1Mesh = createPlayerMesh("#cc2222");
+// const player2Mesh = createPlayerMesh("#2222cc");
+const world = new ECS();
+world.addSystem(new KeyboardSystem(gameStateProvider));
+
+async function createPlayers() {
+  const player1Obj = await makePlayerObject(0, gameStateProvider);
+  const player1 = new PlayerEntity(0, player1Obj, controls.one);
+  world.addEntity(player1);
+  gameAnchor.add(player1Obj);
+
+  const player2Obj = await makePlayerObject(1, gameStateProvider);
+  const player2 = new PlayerEntity(1, player2Obj, controls.two);
+  world.addEntity(player2);
+  gameAnchor.add(player2Obj);
+}
+
 async function init() {
+  //Players
+  await createPlayers();
   // Egg
-  const eggObj = await makeEggObject();
-  const egg = new EggEntity(eggObj);
-  gameAnchor.add(eggObj);
-  world.addEntity(egg);
+  // const eggObj = await makeEggObject();
+  // const egg = new EggEntity(eggObj);
+  // gameAnchor.add(eggObj);
+  // world.addEntity(egg);
 
   // Scenery
   let scenery: SceneryObject | null = null;

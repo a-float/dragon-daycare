@@ -1,16 +1,19 @@
 import { Entity } from "ecs-lib";
-import { Controls, SteerableComponent } from "../components/SteerableComponent";
-import { Object3DComponent } from "../components/Object3DComponent";
+import {
+  Controls,
+  SteerableComponent,
+  SteerControlsComponent,
+} from "../components/SteerableComponent";
+import PlayerObject from "../objects/PlayerObject";
 
 export default class PlayerEntity extends Entity {
   constructor(
-    mesh: THREE.Mesh,
-    position: THREE.Vector3,
+    controlsIndex: number,
+    playerObject: PlayerObject,
     controls: Omit<Controls, "speed">
   ) {
     super();
-    mesh.position.copy(position);
-    this.add(new SteerableComponent({ ...controls, speed: 0.3 }));
-    this.add(new Object3DComponent(mesh));
+    this.add(new SteerControlsComponent(controls));
+    this.add(new SteerableComponent({ controlsIndex }));
   }
 }

@@ -1,10 +1,14 @@
 import z from "zod";
 import { UserEvent } from "./userEvent";
 
-export const TICK_INVERVAL = 200;
+export const TICK_INVERVAL = 50;
 
 export type TileCoord = z.infer<typeof TileCoord>;
 export const TileCoord = z.tuple([z.number().int(), z.number().int()]);
+
+function areCoordEqual(a: TileCoord, b: TileCoord) {
+  return a[0] === b[0] && a[1] === b[1];
+}
 
 export type TurnDirection = z.infer<typeof TurnDirection>;
 export const TurnDirection = z.union([
@@ -54,20 +58,21 @@ export const MapState = z.object({
   width: z.number().int(),
   height: z.number().int(),
   tiles: z.array(TileState),
+  startPoints: z.array(TileCoord),
 });
 
-export function createGameState(): GameState {
+export function createGameState(mapState: MapState): GameState {
   return {
     players: [
       {
         dir: 0,
         isMoving: false,
-        pos: [0, 2],
+        pos: mapState.startPoints[0],
       },
       {
         dir: 0,
         isMoving: false,
-        pos: [1, 0],
+        pos: mapState.startPoints[1],
       },
     ],
     eggs: [
@@ -91,7 +96,7 @@ const getNextPos = (pos: TileCoord, dir: TurnDirection): TileCoord => {
     diff.x = -1;
   }
 
-  return [pos[0] + diff.y, pos[1] + diff.x];
+  return [pos[0] + diff.x, pos[1] + diff.y];
 };
 
 const canStandOnCoords = (mapState: MapState, tilePos: TileCoord): boolean => {
@@ -103,8 +108,10 @@ const canStandOnCoords = (mapState: MapState, tilePos: TileCoord): boolean => {
   ) {
     return false;
   }
-  const nextTile = mapState.tiles[mapState.width * tilePos[1] + tilePos[1]];
-  return !nextTile.isWall;
+
+  const tile = mapState.tiles[mapState.width * tilePos[1] + tilePos[0]];
+
+  return !tile.isWall;
 };
 
 const applyUserEvent = (
@@ -143,10 +150,12 @@ const movePlayers = (gameState: GameState, mapState: MapState): number[] => {
   gameState.players.forEach((player, i) => {
     if (player.isMoving) {
       const next = nextCoords[i];
+
       for (let j = 0; j < gameState.players.length; j++) {
         if (i === j) continue;
+
         const otherNext = nextCoords[j];
-        if (next[0] === otherNext[0] && next[1] === otherNext[1]) {
+        if (areCoordEqual(next, otherNext)) {
           // collision about to occur
           if (j < i || !gameState.players[j].isMoving) {
             // bounce back, other player has a higher priority to be on this tile
@@ -165,7 +174,7 @@ const movePlayers = (gameState: GameState, mapState: MapState): number[] => {
           }
         } else {
           // all good, take the spot
-          if (canStandOnCoords(mapState, next)) {
+          if (!areCoordEqual(player.pos, next)) {
             player.pos = next;
             playersThatMoved.push(i);
           } else {

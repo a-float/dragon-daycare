@@ -9,8 +9,8 @@ class LocalGameStateProvider extends AbstractGameStateProvider {
   constructor() {
     super();
 
-    this.gameState = createGameState();
     this.mapState = generateLevel();
+    this.gameState = createGameState(this.mapState);
 
     setInterval(() => {
       this.update();
@@ -24,6 +24,9 @@ class LocalGameStateProvider extends AbstractGameStateProvider {
 
     updateState(this.gameState, this.mapState, this.eventsQueue);
     this.eventsQueue = [];
+
+    // Notifying subscribes
+    this.gameState = this.gameState;
   }
 
   sendEvent(event: UserEvent): void {

@@ -32,6 +32,10 @@ abstract class AbstractGameStateProvider {
     return () => this.subsMap.delete(listener);
   }
 
+  get gameState() {
+    return this._gameState!;
+  }
+
   set gameState(newState: GameState) {
     this._gameState = newState;
 
@@ -46,6 +50,10 @@ abstract class AbstractGameStateProvider {
     for (const sub of this.subsMap.values()) {
       sub(newState);
     }
+  }
+
+  get mapState() {
+    return this._mapState!;
   }
 
   abstract sendEvent(event: UserEvent): void;
