@@ -9,10 +9,10 @@ const controls = {
     action: " ",
   },
   two: {
-    down: "s",
-    left: "a",
-    up: "w",
-    right: "d",
+    down: "ArrowDown",
+    left: "ArrowLeft",
+    up: "ArrowUp",
+    right: "ArrowRight",
     action: "enter",
   },
 } satisfies Record<string, Controls>;

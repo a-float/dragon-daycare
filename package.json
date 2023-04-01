@@ -16,6 +16,7 @@
   "dependencies": {
     "ecs-lib": "^0.8.0-pre.2",
     "three": "^0.151.2",
+    "three-stdlib": "^2.21.8",
     "zod": "^3.21.4"
   }
 }
