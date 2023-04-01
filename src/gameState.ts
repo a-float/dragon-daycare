@@ -100,6 +100,19 @@ const getNextPos = (pos: TileCoord, dir: TurnDirection): TileCoord => {
   return [pos[0] + diff.y, pos[1] + diff.x];
 };
 
+const canStandOnCoords = (mapState: MapState, tilePos: TileCoord): boolean => {
+  if (
+    tilePos[0] < 0 ||
+    tilePos[0] >= mapState.width ||
+    tilePos[1] < 0 ||
+    tilePos[1] >= mapState.height
+  ) {
+    return false;
+  }
+  const nextTile = mapState.tiles[mapState.width * tilePos[1] + tilePos[1]];
+  return !nextTile.isWall;
+};
+
 const applyUserEvent = (
   gameState: GameState,
   mapState: MapState,
@@ -110,33 +123,70 @@ const applyUserEvent = (
 
   if (event.type === "move") {
     player.dir = event.dir;
-    const diff = getDiffFromDir(event.dir);
-    const newPos = [player.pos[0] + diff.y, (player.pos[1] = diff.y)];
-    if (
-      newPos[0] < 0 ||
-      newPos[0] >= mapState.width ||
-      newPos[1] < 0 ||
-      newPos[1] >= mapState.height
-    ) {
-      return;
-    }
-    const nextTile = mapState.tiles[mapState.width * newPos[1] + newPos[1]];
-    if (!nextTile.isWall) player.isMoving = true;
+    const newPos = getNextPos(player.pos, event.dir);
+    if (canStandOnCoords(mapState, newPos)) player.isMoving = true;
   }
   if (event.type === "action") {
     console.log("Action performed");
   }
 };
 
-const updatedState = (
+const movePlayers = (gameState: GameState, mapState: MapState): number[] => {
+  const playersThatMoved: number[] = [];
+  // each player's preferred next tile
+  const nextCoords = gameState.players.map((player) => {
+    if (!player.isMoving) return player.pos;
+    const next = getNextPos(player.pos, player.dir);
+    return canStandOnCoords(mapState, next) ? next : player.pos;
+  });
+  gameState.players.forEach((player, i) => {
+    if (player.isMoving) {
+      const next = nextCoords[i];
+      for (let j = 0; j < gameState.players.length; j++) {
+        if (i === j) continue;
+        const otherNext = nextCoords[j];
+        if (next[0] === otherNext[0] && next[1] === otherNext[1]) {
+          // collision about to occur
+          if (j < i || !gameState.players[j].isMoving) {
+            // bounce back, other player has a higher priority to be on this tile
+            player.dir = ((player.dir + 2) % 4) as unknown as TurnDirection;
+            const newNext = getNextPos(player.pos, player.dir);
+            //
+            if (canStandOnCoords(mapState, newNext)) {
+              nextCoords[i] = newNext;
+              player.pos = newNext;
+              playersThatMoved.push(i);
+              // TODO earlier player might have actually took that place, might act up in some edge cases
+            } else {
+              player.isMoving = false;
+            }
+            break;
+          }
+        } else {
+          // all good, take the spot
+          if (canStandOnCoords(mapState, next)) {
+            player.pos = next;
+            playersThatMoved.push(i);
+          } else {
+            player.isMoving = false;
+          }
+        }
+      }
+    }
+  });
+  return playersThatMoved;
+};
+
+const updateState = (
   gameState: GameState,
   mapState: MapState,
   events: UserEvent[]
 ) => {
   events.forEach((e) => applyUserEvent(gameState, mapState, e));
-  for (const player of gameState.players) {
-    if (player.isMoving) {
-      const diff = getDiffFromDir(player.dir);
-    }
-  }
+  const playersThatMoved = movePlayers(gameState, mapState);
+  playersThatMoved.forEach((playerId) => {
+    console.log(
+      `Player ${playerId} has moved in direction ${gameState.players[playerId].dir}`
+    );
+  });
 };
