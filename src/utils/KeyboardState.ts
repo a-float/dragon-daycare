@@ -5,6 +5,7 @@ class KeyboardState {
   constructor() {
     if (KeyboardState._instance) return KeyboardState._instance;
     KeyboardState._instance = this;
+
     window.addEventListener("keydown", this.handleKeyDown.bind(this));
     window.addEventListener("keyup", this.handleKeyUp.bind(this));
   }

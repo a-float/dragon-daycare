@@ -11,6 +11,7 @@
    sodipodi:docname="dragon-idle.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:svg="http://www.w3.org/2000/svg">
   <sodipodi:namedview
@@ -24,17 +25,29 @@
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
      showgrid="false"
-     inkscape:zoom="0.71312905"
-     inkscape:cx="270.63825"
-     inkscape:cy="304.29275"
+     inkscape:zoom="0.64371916"
+     inkscape:cx="462.9348"
+     inkscape:cy="425.65146"
      inkscape:window-width="1512"
      inkscape:window-height="916"
      inkscape:window-x="0"
      inkscape:window-y="38"
      inkscape:window-maximized="1"
-     inkscape:current-layer="layer1" />
+     inkscape:current-layer="layer3" />
   <defs
      id="defs462">
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient4283">
+      <stop
+         style="stop-color:#ff6706;stop-opacity:1;"
+         offset="0"
+         id="stop4279" />
+      <stop
+         style="stop-color:#f85200;stop-opacity:1;"
+         offset="1"
+         id="stop4281" />
+    </linearGradient>
     <inkscape:path-effect
        effect="mirror_symmetry"
        start_point="116.5,0"
@@ -83,6 +96,15 @@
        split_items="false"
        split_open="false"
        link_styles="false" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4283"
+       id="linearGradient4285"
+       x1="105.12174"
+       y1="57.367012"
+       x2="105.38841"
+       y2="89.26931"
+       gradientUnits="userSpaceOnUse" />
   </defs>
   <g
      inkscape:label="Warstwa 1"
@@ -90,7 +112,7 @@
      id="layer1">
     <path
        id="path693"
-       style="fill:#ff6706;fill-opacity:1;stroke-width:2.11667;paint-order:fill markers stroke"
+       style="fill:url(#linearGradient4285);fill-opacity:1;stroke-width:2.11667;paint-order:fill markers stroke"
        d="m 105.36154,57.166536 c -1.90607,0 -4.01729,0.35501 -5.362479,0.38809 -2.95942,0.07277 -4.9759,0.17309 -6.576339,6.312277 -0.829819,3.18313 -0.602906,0.424727 -9.057328,8.584489 -2.448337,2.362996 -9.660236,14.617799 -3.995622,23.551017 8.004762,12.623681 3.676238,10.192781 5.935555,21.037471 2.259318,10.8447 0.940086,10.26881 1.843815,12.07627 0.90372,1.80744 6.998023,-1.22473 6.998023,-1.22473 0,0 -1.510027,-8.34111 3.008606,-6.0818 2.096389,1.0482 -0.0724,11.86156 7.205769,12.18117 7.27817,-0.31961 5.10936,-11.13297 7.20576,-12.18117 4.51862,-2.25931 3.0086,6.0818 3.0086,6.0818 0,0 6.0943,3.03217 6.99802,1.22473 0.90373,-1.80746 -0.4155,-1.23157 1.84382,-12.07627 2.25932,-10.84469 -2.06921,-8.41379 5.93555,-21.037471 5.66462,-8.933218 -1.54728,-21.188021 -3.99562,-23.551017 -8.45442,-8.159762 -8.22752,-5.401359 -9.05733,-8.584489 -1.60044,-6.139187 -3.61692,-6.239504 -6.57634,-6.312277 -1.34518,-0.03308 -3.45639,-0.38809 -5.36246,-0.38809 z" />
   </g>
   <g
@@ -136,9 +158,9 @@
      id="layer3"
      inkscape:label="Warstwa 3">
     <path
-       style="fill:#ff6706;fill-opacity:1;stroke-width:2.11667;paint-order:fill markers stroke"
-       d="m 112.04187,117.33735 c 0,0 3.24716,2.07338 1.99154,11.28036 -1.09953,8.06243 -6.37445,11.24119 -13.46607,14.22841 -10.179426,4.28791 -15.459734,-8.07607 -13.76752,-12.42748 3.626175,3.86792 9.31315,7.10163 11.730601,2.50847 2.417449,-4.59315 -0.34711,-10.73098 -2.764565,-13.87366"
+       style="fill:#f85200;fill-opacity:1;stroke-width:2.11667;paint-order:fill markers stroke"
+       d="m 95.765856,119.05345 c 1.559411,3.56736 5.182014,9.2805 2.764565,13.87366 -2.41745,4.59316 -8.104426,1.35945 -11.730601,-2.50847 -1.692214,4.35141 3.588094,16.71539 13.76752,12.42748 7.09162,-2.98722 12.36654,-6.16598 13.46607,-14.22841 1.25562,-9.20698 -1.99154,-11.28036 -1.99154,-11.28036 -3.62893,-6.10001 -14.914329,-3.51484 -16.276014,1.7161 z"
        id="path3978"
-       sodipodi:nodetypes="csscsc" />
+       sodipodi:nodetypes="cssczcc" />
   </g>
 </svg>
