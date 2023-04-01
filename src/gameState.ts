@@ -41,13 +41,26 @@ export const GameState = z.object({
   eggs: z.array(EggState),
 });
 
-export const TileState = z.object({ isWall: z.boolean() });
+type Device = z.infer<typeof Device>;
+export const Device = z.union([
+  z.literal("furnace"),
+  z.literal("freezer"),
+  z.literal("moisturizer"),
+  z.literal("dryer"),
+]);
+
+export const TileState = z.object({
+  isWall: z.boolean(),
+  playerStart: z.number().optional(),
+  device: Device.optional(),
+});
 
 export type MapState = z.infer<typeof MapState>;
 export const MapState = z.object({
   width: z.number().int(),
   height: z.number().int(),
   tiles: z.array(TileState),
+  startingTiles: z.array(z.number().int()),
 });
 
 export function createGameState(): GameState {

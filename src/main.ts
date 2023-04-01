@@ -8,7 +8,6 @@ import KeyboardSystem from "./systems/KeyboardSystem";
 import { makeEggObject } from "./objects/EggObject";
 import EggEntity from "./entities/EggEntity";
 import GameAnchor from "./objects/GameAnchor";
-import { makeSceneryObject } from "./objects/SceneryObject";
 
 const createPlayerMesh = (color: THREE.ColorRepresentation) => {
   const geometry = new THREE.BoxGeometry(1, 1, 1);
