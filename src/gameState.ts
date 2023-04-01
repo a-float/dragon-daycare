@@ -43,7 +43,7 @@ export const GameState = z.object({
 
 export const TileState = z.object({ isWall: z.boolean() });
 
-type MapState = z.infer<typeof MapState>;
+export type MapState = z.infer<typeof MapState>;
 export const MapState = z.object({
   width: z.number().int(),
   height: z.number().int(),
