@@ -32,11 +32,18 @@ export const PlayerState = z.object({
   heldObject: ObjectID.optional(),
 });
 
+export const HatchRange = z.object({
+  temp: z.tuple([z.number(), z.number()]),
+  wetness: z.tuple([z.number(), z.number()]),
+});
+
 export type EggState = z.infer<typeof EggState>;
 export const EggState = z.object({
   id: ObjectID,
   pos: TileCoord,
+  hatchRange: HatchRange,
   wetness: z.number(),
+  progress: z.number(),
   hp: z.number(),
   temp: z.number(),
   heldBy: z.number().int().optional(),
@@ -92,6 +99,11 @@ export function createGameState(mapState: MapState): GameState {
         temp: 0.5,
         hp: 1,
         wetness: 0.5,
+        progress: 0,
+        hatchRange: {
+          temp: [0.1, 0.3],
+          wetness: [0.8, 1],
+        },
       },
     ],
   };
@@ -229,12 +241,12 @@ const movePlayers = (gameState: GameState, mapState: MapState): number[] => {
           const toStop = Math.max(i, j);
           const toKeepMoving = Math.min(i, j);
           gameState.players[toStop].isMoving = false;
-          gameState.players[toKeepMoving].pos = nextCoords[toKeepMoving];
+          // gameState.players[toKeepMoving].pos = nextCoords[toKeepMoving];
           playersThatMoved.push(toKeepMoving);
         }
       }
     }
-    if (!playersThatMoved.includes(i)) {
+    if (!playersThatMoved.includes(i) && player.isMoving) {
       player.pos = playerNextPos;
       playersThatMoved.push(i);
     }
@@ -248,6 +260,14 @@ const movePlayers = (gameState: GameState, mapState: MapState): number[] => {
   return playersThatMoved;
 };
 
+const resetEgg = (egg: EggState) => {
+  egg.temp = 0.5;
+  egg.wetness = 0.5;
+  egg.hp = 1;
+  egg.progress = 0;
+  egg.pos = [0, 0];
+};
+
 const clamp = (min: number, val: number, max: number) =>
   Math.min(Math.max(val, min), max);
 
@@ -255,20 +275,50 @@ const normalize = (val: number) =>
   Math.abs(val) < 0.0001 ? 0 : val / Math.abs(val);
 
 const updateEggState = (egg: EggState, mapState: MapState) => {
-  egg.temp == normalize(0.5 - egg.temp) / TICK_INVERVAL / 20;
+  if (egg.hp <= 0 || egg.progress >= 1) {
+    if (egg.hp <= 0) {
+      console.log("Egg broken");
+    } else if (egg.progress >= 1) {
+      console.log("Egg hatched!");
+    }
+    resetEgg(egg);
+    let pos: TileCoord;
+    do {
+      pos = [
+        Math.floor(Math.random() * mapState.width),
+        Math.floor(Math.random() * mapState.height),
+      ];
+    } while (!canStandOnCoords(mapState, pos));
+    egg.pos = pos;
+    return;
+  }
+  
+  egg.temp += normalize(0.5 - egg.temp) / TICK_INVERVAL / 10;
   egg.wetness += normalize(0.5 - egg.wetness) / TICK_INVERVAL / 10;
   if (Math.abs(egg.temp - 0.5) < 0.01) egg.temp = 0.5;
   if (Math.abs(egg.wetness - 0.5) < 0.01) egg.wetness = 0.5;
 
   const tileIdx = egg.pos[1] * mapState.width + egg.pos[0];
   const device = mapState.tiles[tileIdx]?.device;
-  if (device === "freezer") egg.temp -= 0.7 / TICK_INVERVAL;
-  else if (device === "furnace") egg.temp += 0.7 / TICK_INVERVAL;
+  if (device === "freezer") egg.temp -= 0.8 / TICK_INVERVAL;
+  else if (device === "furnace") egg.temp += 0.8 / TICK_INVERVAL;
   else if (device === "dryer") egg.wetness -= 0.8 / TICK_INVERVAL;
   else if (device === "moisturizer") egg.wetness += 0.8 / TICK_INVERVAL;
   egg.temp = clamp(0, egg.temp, 1);
   egg.wetness = clamp(0, egg.wetness, 1);
   egg.hp = clamp(0, egg.hp, 1);
+
+  if (
+    egg.hatchRange.temp[0] <= egg.temp &&
+    egg.temp <= egg.hatchRange.temp[1] &&
+    egg.hatchRange.wetness[0] <= egg.wetness &&
+    egg.wetness <= egg.hatchRange.wetness[1]
+  ) {
+    egg.progress += 0.8 / TICK_INVERVAL;
+    egg.hp += 0.1 / TICK_INVERVAL;
+  } else {
+    egg.hp -= 0.1 / TICK_INVERVAL;
+  }
 };
 
 export const updateState = (
