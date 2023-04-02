@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import loadTexture from "../utils/loadTexture";
-import { GameState } from "../gameState/gameState";
+import { GameState } from "@dragon-daycare/shared/gameState";
 import AbstractGameStateProvider from "../gameState/abstractGameStateProvider";
 
 const ASSETS = Promise.all([loadTexture("/dragon/dragon-idle.png")]);

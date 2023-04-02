@@ -6,7 +6,7 @@ import {
   SteerControlsComponent,
 } from "../components/SteerableComponent";
 import AbstractGameStateProvider from "../gameState/abstractGameStateProvider";
-import { TurnDirection } from "../gameState/gameState";
+import { TurnDirection } from "../../../shared/gameState";
 
 export default class KeyboardSystem extends System {
   moveDir: TurnDirection | null = null;

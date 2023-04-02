@@ -1,4 +1,4 @@
-import { GameState, MapState } from "./gameState";
+import { GameState, MapState } from "../../../shared/gameState";
 import { UserEvent } from "./userEvent";
 
 type Listener<T> = (value: T) => void;

@@ -1,0 +1,19 @@
+{
+  "name": "@dragon-daycare/client",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@dragon-daycare/shared": "*",
+    "ecs-lib": "^0.8.0-pre.2",
+    "three": "^0.151.2",
+    "three-stdlib": "^2.21.8"
+  },
+  "author": "",
+  "license": "ISC"
+}

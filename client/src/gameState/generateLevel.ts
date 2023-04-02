@@ -1,4 +1,8 @@
-import { MapState, TileCoord, TileState } from "./gameState";
+import {
+  MapState,
+  TileCoord,
+  TileState,
+} from "@dragon-daycare/shared/gameState";
 
 function insert(mapState: MapState, x: number, y: number, tile: TileState) {
   let i = x + y * mapState.width;

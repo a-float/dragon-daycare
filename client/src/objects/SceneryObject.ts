@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { MapState } from "../gameState/gameState";
+import { MapState } from "../../../shared/gameState";
 import { Disposable } from "./disposable";
 
 import WallObject from "./WallObject";

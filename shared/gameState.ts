@@ -1,5 +1,5 @@
 import z from "zod";
-import { UserEvent } from "./userEvent";
+import { UserEvent } from "./userEvent.js";
 
 export const TICK_INVERVAL = 50;
 
