@@ -35,6 +35,13 @@ class EggObject extends THREE.Group {
     interAngle: 0,
   };
   private playerHoldFactor = new SmoothValue(0, Easing.easeOutQuad);
+  doneMesh: THREE.Mesh<THREE.BufferGeometry, THREE.Material | THREE.Material[]>;
+  crackMesh: THREE.Mesh<
+    THREE.BufferGeometry,
+    THREE.Material | THREE.Material[]
+  >;
+  private crackTextures: THREE.Texture[];
+  private doneTextures: THREE.Texture[];
 
   constructor(
     [eggBase]: // eggDone01,
@@ -48,13 +55,28 @@ class EggObject extends THREE.Group {
     gameStateProvider: AbstractGameStateProvider
   ) {
     super();
-
+    this.crackTextures = [eggCrack03, eggCrack02, eggCrack01];
+    this.doneTextures = [eggDone01, eggDone02, eggDone03]; // reversed direction lmaao
     const geo = new THREE.PlaneGeometry(1, 1);
+    this.prepareMesh(geo, eggBase);
+    this.doneMesh = this.prepareMesh(geo, eggDone01);
+    this.doneMesh.visible = false;
+    this.crackMesh = this.prepareMesh(geo, eggCrack01);
+    this.crackMesh.visible = false;
+
+    this.unsubscribes.push(
+      gameStateProvider.subscribe((v) => this.onNewGameState(v))
+    );
+  }
+
+  private prepareMesh(
+    geo: THREE.BufferGeometry,
+    map: THREE.Texture
+  ): THREE.Mesh {
     const mesh = new THREE.Mesh(
       geo,
-      // new THREE.MeshBasicMaterial({ color: "#0000ff" })
       new THREE.MeshBasicMaterial({
-        map: eggBase,
+        map,
         transparent: true,
         premultipliedAlpha: false,
       })
@@ -62,20 +84,45 @@ class EggObject extends THREE.Group {
     mesh.scale.setScalar(0.6);
     mesh.translateZ(10);
     mesh.rotateX(Math.PI);
-
     this.add(mesh);
-
-    this.unsubscribes.push(
-      gameStateProvider.subscribe((v) => this.onNewGameState(v))
-    );
+    return mesh;
   }
+
+  private getDistFromRange(val: number, rangeMin: number, rangeMax: number) {
+    return val < rangeMin
+      ? val - rangeMin
+      : val > rangeMax
+      ? val - rangeMax
+      : 0;
+  }
+
+  // doesnt work, I think
+  // updateMeshes(hp: number, progress: number) {
+  //   for (let i = 0; i < this.crackTextures.length; i++) {
+  //     if (hp < (i + 1) / (this.crackTextures.length + 1)) {
+  //       (this.crackMesh.material as any).map = this.crackTextures[i]; // TODO hacky typescript
+  //       console.log("changing egg map");
+
+  //       break;
+  //     }
+  //   }
+  //   for (let i = this.doneTextures.length - 1; i >= 0; i--) {
+  //     if (progress > (i + 1) / (this.crackTextures.length + 1)) {
+  //       (this.doneMesh.material as any).map = this.doneTextures[i]; // TODO hacky typescript
+  //       this.doneMesh.material
+  //       console.log("changing done egg map"); 
+  //       break;
+  //     }
+  //   }
+  // }
 
   onNewGameState(gameState: GameState): void {
     const eggState = gameState.eggs.find((egg) => egg.id === this.eggId);
     if (!eggState) {
       throw new Error("Invalid egg id");
     }
-
+    if (eggState.hp <= 0 || eggState.progress >= 1) return;
+    // this.updateMeshes(eggState.hp, eggState.progress);
     if (eggState.heldBy !== undefined) {
       this.holdingPlayerTransform = stepPlayerTransform(
         this.isHeld
@@ -96,11 +143,30 @@ class EggObject extends THREE.Group {
       this.isHeld = false;
       this.eggPos = [...eggState.pos];
     }
-    console.log({
-      temp: Math.round(eggState.temp * 1000) / 1000,
-      wetness: Math.round(eggState.wetness * 1000) / 1000,
-      hp: Math.round(eggState.hp * 1000) / 1000,
-    });
+    const tempDiff = this.getDistFromRange(
+      eggState.temp,
+      ...eggState.hatchRange.temp
+    );
+    const wetnessDiff = this.getDistFromRange(
+      eggState.wetness,
+      ...eggState.hatchRange.wetness
+    );
+
+    if (tempDiff !== 0 || wetnessDiff !== 0) {
+      if (Math.abs(tempDiff) > Math.abs(wetnessDiff)) {
+        console.log(tempDiff > 0 ? "Too hot" : "Too cold");
+      } else {
+        console.log(wetnessDiff > 0 ? "Too wet" : "Too dry");
+      }
+    }
+
+    // EGG STATS DEBUG
+    // console.log({
+    //   temp: Math.round(eggState.temp * 1000) / 1000,
+    //   wetness: Math.round(eggState.wetness * 1000) / 1000,
+    //   hp: Math.round(eggState.hp * 1000) / 1000,
+    //   progress: eggState.progress,
+    // });
   }
 
   update(delta: number) {

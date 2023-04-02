@@ -148,6 +148,10 @@ class PlayerObject extends THREE.Group {
   }
 
   update(delta: number) {
+    if (this.transform.nextPos === null) {
+      return;
+    }
+
     const { pos, angle } = advancePlayerTransform(this.transform, delta);
     Spring.simulate(this.squashSpring, delta / 1000000);
 
