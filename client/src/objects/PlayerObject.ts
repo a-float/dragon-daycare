@@ -5,11 +5,13 @@ import {
   TICK_INVERVAL,
   TileCoord,
   lerpCoords,
+  areCoordEqual,
 } from "@dragon-daycare/shared";
 import loadTexture from "../utils/loadTexture";
 import AbstractGameStateProvider from "../gameState/abstractGameStateProvider";
 import { PlayerState } from "@dragon-daycare/shared/gameState";
 import { Spring } from "../utils/spring";
+import { Easing } from "../utils/smoothValue";
 
 const ASSETS = Promise.all([loadTexture("/dragon/dragon-idle.png")]);
 
@@ -19,16 +21,34 @@ export type PlayerTransform = {
   prevPos: TileCoord | null;
   nextPos: TileCoord | null;
   interPos: number;
+
+  prevAngle: number;
+  nextAngle: number;
+  interAngle: number;
 };
 
 export function stepPlayerTransform(
   prev: PlayerTransform,
   player: PlayerState
 ): PlayerTransform {
+  const prevAngle = (prev.nextAngle + 4) % 4;
+  const angleDiff = player.dir - prevAngle;
+
+  let nextAngle: number = player.dir;
+  if (angleDiff >= 3) {
+    nextAngle = player.dir - 4;
+  } else if (angleDiff <= -3) {
+    nextAngle = player.dir + 4;
+  }
+
   return {
     prevPos: [...(prev.nextPos ?? player.pos)],
     nextPos: [...player.pos],
     interPos: 0,
+
+    prevAngle,
+    nextAngle,
+    interAngle: 0,
   };
 }
 
@@ -38,8 +58,26 @@ export function advancePlayerTransform(curr: PlayerTransform, delta: number) {
     curr.interPos = 1;
   }
 
+  if (
+    !curr.prevPos ||
+    !curr.nextPos ||
+    !areCoordEqual(curr.prevPos, curr.nextPos)
+  ) {
+    curr.interAngle = 1;
+  } else {
+    curr.interAngle += delta / TICK_INVERVAL;
+    if (curr.interAngle > 1) {
+      curr.interAngle = 1;
+    }
+  }
+
   return {
     pos: lerpCoords(curr.prevPos!, curr.nextPos!, curr.interPos),
+    angle: THREE.MathUtils.lerp(
+      curr.prevAngle,
+      curr.nextAngle,
+      Easing.easeInOut(curr.interAngle)
+    ),
   };
 }
 
@@ -50,6 +88,10 @@ class PlayerObject extends THREE.Group {
     prevPos: null,
     nextPos: null,
     interPos: 0,
+
+    prevAngle: 0,
+    nextAngle: 0,
+    interAngle: 0,
   };
 
   private turnGroup = new THREE.Group();
@@ -91,11 +133,6 @@ class PlayerObject extends THREE.Group {
 
     this.transform = stepPlayerTransform(this.transform, playerState);
 
-    this.turnGroup.setRotationFromAxisAngle(
-      new THREE.Vector3(0, 0, 1),
-      (playerState.dir * Math.PI) / 2
-    );
-
     if (playerState.isMoving) {
       Spring.shift(this.squashSpring, 0.2, 0);
     } else {
@@ -104,7 +141,7 @@ class PlayerObject extends THREE.Group {
   }
 
   update(delta) {
-    const { pos } = advancePlayerTransform(this.transform, delta);
+    const { pos, angle } = advancePlayerTransform(this.transform, delta);
     Spring.simulate(this.squashSpring, delta / 1000000);
 
     console.log(this.squashSpring);
@@ -113,6 +150,11 @@ class PlayerObject extends THREE.Group {
       1 - this.squashSpring.currX,
       1 + this.squashSpring.currX,
       1
+    );
+
+    this.turnGroup.setRotationFromAxisAngle(
+      new THREE.Vector3(0, 0, 1),
+      (angle * Math.PI) / 2
     );
 
     this.position.set(...pos, 0);

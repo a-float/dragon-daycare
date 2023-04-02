@@ -6,7 +6,7 @@ export const Easing = {
   linear: (t) => t,
   easeInQuad: (t) => t * t,
   easeOutQuad: (t) => 1 - (1 - t) * (1 - t),
-  easeInOut: (t) => lerp(Easing.easeInQuad(t), Easing.easeOutQuad(t), t),
+  easeInOut: (t) => t * t * (3.0 - 2.0 * t),
 };
 
 class SmoothValue {
