@@ -15,6 +15,20 @@ class LocalGameStateProvider extends AbstractGameStateProvider {
     this.mapState = maps.MAP_0;
     this.gameState = createGameState();
 
+    // Player 0
+    this.gameState.players.push({
+      pos: this.mapState.startPoints[0],
+      dir: 0,
+      isMoving: false,
+    });
+
+    // Player 1
+    this.gameState.players.push({
+      pos: this.mapState.startPoints[1],
+      dir: 0,
+      isMoving: false,
+    });
+
     console.log(this.mapState);
 
     setInterval(() => {
