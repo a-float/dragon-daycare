@@ -1,5 +1,5 @@
-import { GameState, MapState } from "../../../shared/gameState";
-import { UserEvent } from "../../../shared/userEvent";
+import { GameState, MapState } from "../../../shared/gameState.js";
+import { UserEvent } from "../../../shared/userEvent.js";
 
 type Listener<T> = (value: T) => void;
 

@@ -1,10 +1,10 @@
-import { parseMap, maps, UserEvent } from "@dragon-daycare/shared";
-import AbstractGameStateProvider from "./abstractGameStateProvider";
+import { maps, UserEvent } from "@dragon-daycare/shared";
+import AbstractGameStateProvider from "./abstractGameStateProvider.js";
 import {
   createGameState,
   TICK_INVERVAL,
   updateState,
-} from "../../../shared/gameState";
+} from "../../../shared/gameState.js";
 
 class LocalGameStateProvider extends AbstractGameStateProvider {
   eventsQueue: UserEvent[] = [];

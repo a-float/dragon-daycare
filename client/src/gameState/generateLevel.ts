@@ -1,8 +1,4 @@
-import {
-  MapState,
-  TileCoord,
-  TileState,
-} from "@dragon-daycare/shared/gameState";
+import { MapState, TileCoord, TileState } from "@dragon-daycare/shared";
 
 function insert(mapState: MapState, x: number, y: number, tile: TileState) {
   let i = x + y * mapState.width;
@@ -51,7 +47,9 @@ function generateLevel(): MapState {
     mapState.width - 2,
     Math.floor(mapState.height / 2),
   ] as TileCoord;
+  // @ts-ignore
   insert(mapState, ...entryLeft, { isWall: false });
+  // @ts-ignore
   insert(mapState, ...entryRight, { isWall: false });
 
   mapState.startPoints.push(entryLeft);
