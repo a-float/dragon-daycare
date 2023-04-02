@@ -42,6 +42,7 @@ wss.on("connection", (ws: any) => {
       if (clients.indexOf(ws) == -1) {
         clients.push(ws);
         ws.info = {};
+        
       }
 
       var found = false;
@@ -54,6 +55,11 @@ wss.on("connection", (ws: any) => {
             if (ws.info.game.started == 1) {
               ws.send(JSON.stringify({ type: 5 }));
             }
+            ws.info.game.state.players.push( {
+                    dir: 0, 
+                            isMoving: false,
+                                    pos: ws.info.game.map.startPoints[0],
+                                          });
           }
           found = true;
           break;
