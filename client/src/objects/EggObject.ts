@@ -56,7 +56,7 @@ class EggObject extends THREE.Group {
         premultipliedAlpha: false,
       })
     );
-    mesh.scale.setScalar(1);
+    mesh.scale.setScalar(0.8);
     mesh.translateZ(10);
     mesh.rotateX(Math.PI);
 
@@ -97,7 +97,7 @@ class EggObject extends THREE.Group {
     let heldPos = this.holdingPlayerTransform.prevPos ?? this.eggPos;
 
     if (this.isHeld) {
-      this.playerHoldFactor.to(1, 200);
+      this.playerHoldFactor.to(1, 100);
 
       const { pos } = advancePlayerTransform(
         this.holdingPlayerTransform,
@@ -105,7 +105,7 @@ class EggObject extends THREE.Group {
       );
       heldPos = pos;
     } else {
-      this.playerHoldFactor.to(0, 200);
+      this.playerHoldFactor.to(0, 100);
     }
 
     this.position.set(

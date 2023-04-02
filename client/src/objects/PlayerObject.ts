@@ -9,6 +9,7 @@ import {
 import loadTexture from "../utils/loadTexture";
 import AbstractGameStateProvider from "../gameState/abstractGameStateProvider";
 import { PlayerState } from "@dragon-daycare/shared/gameState";
+import { Spring } from "../utils/spring";
 
 const ASSETS = Promise.all([loadTexture("/dragon/dragon-idle.png")]);
 
@@ -51,6 +52,10 @@ class PlayerObject extends THREE.Group {
     interPos: 0,
   };
 
+  private turnGroup = new THREE.Group();
+  private squashGroup = new THREE.Group();
+  private squashSpring = Spring(0, 0, 5, 0.6, 0.7);
+
   constructor(
     [bodyTexture]: Awaited<typeof ASSETS>,
     gameStateProvider: AbstractGameStateProvider,
@@ -72,7 +77,9 @@ class PlayerObject extends THREE.Group {
     mesh.scale.setScalar(1.3);
     mesh.rotateX(Math.PI);
 
-    this.add(mesh);
+    this.add(this.turnGroup);
+    this.turnGroup.add(this.squashGroup);
+    this.squashGroup.add(mesh);
 
     this.unsubscribes.push(
       gameStateProvider.subscribe((v) => this.onNewGameState(v))
@@ -84,14 +91,29 @@ class PlayerObject extends THREE.Group {
 
     this.transform = stepPlayerTransform(this.transform, playerState);
 
-    this.setRotationFromAxisAngle(
+    this.turnGroup.setRotationFromAxisAngle(
       new THREE.Vector3(0, 0, 1),
       (playerState.dir * Math.PI) / 2
     );
+
+    if (playerState.isMoving) {
+      Spring.shift(this.squashSpring, 0.2, 0);
+    } else {
+      Spring.shift(this.squashSpring, 0, 0);
+    }
   }
 
   update(delta) {
     const { pos } = advancePlayerTransform(this.transform, delta);
+    Spring.simulate(this.squashSpring, delta / 1000000);
+
+    console.log(this.squashSpring);
+
+    this.squashGroup.scale.set(
+      1 - this.squashSpring.currX,
+      1 + this.squashSpring.currX,
+      1
+    );
 
     this.position.set(...pos, 0);
   }
