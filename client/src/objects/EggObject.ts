@@ -39,13 +39,8 @@ class EggObject extends THREE.Group {
     interAngle: 0,
   };
   private playerHoldFactor = new SmoothValue(0, Easing.easeOutQuad);
-  doneMesh: THREE.Mesh<THREE.BufferGeometry, THREE.Material | THREE.Material[]>;
-  crackMesh: THREE.Mesh<
-    THREE.BufferGeometry,
-    THREE.Material | THREE.Material[]
-  >;
-  private crackTextures: THREE.Texture[];
-  private doneTextures: THREE.Texture[];
+  doneMeshes: THREE.Mesh[];
+  crackMeshes: THREE.Mesh[];
   private statusBadges: Record<"dry" | "wet" | "cold" | "hot", THREE.Mesh>;
 
   constructor(
@@ -66,14 +61,17 @@ class EggObject extends THREE.Group {
     gameStateProvider: AbstractGameStateProvider
   ) {
     super();
-    this.crackTextures = [eggCrack03, eggCrack02, eggCrack01];
-    this.doneTextures = [eggDone01, eggDone02, eggDone03]; // reversed direction lmaao
     const geo = new THREE.PlaneGeometry(1, 1);
     this.prepareMesh(geo, eggBase);
-    this.doneMesh = this.prepareMesh(geo, eggDone01);
-    this.doneMesh.visible = false;
-    this.crackMesh = this.prepareMesh(geo, eggCrack01);
-    this.crackMesh.visible = false;
+    this.crackMeshes = [eggCrack03, eggCrack02, eggCrack01].map((txt) =>
+      this.prepareMesh(geo, txt)
+    );
+    this.doneMeshes = [eggDone01, eggDone02, eggDone03].map((txt) =>
+      this.prepareMesh(geo, txt)
+    );
+    [...this.crackMeshes, ...this.doneMeshes].forEach(
+      (m) => (m.visible = false)
+    );
 
     const badgeGeo = new THREE.PlaneGeometry(0.8, 0.8);
     this.statusBadges = {
@@ -121,24 +119,23 @@ class EggObject extends THREE.Group {
   }
 
   // doesnt work, I think
-  // updateMeshes(hp: number, progress: number) {
-  //   for (let i = 0; i < this.crackTextures.length; i++) {
-  //     if (hp < (i + 1) / (this.crackTextures.length + 1)) {
-  //       (this.crackMesh.material as any).map = this.crackTextures[i]; // TODO hacky typescript
-  //       console.log("changing egg map");
-
-  //       break;
-  //     }
-  //   }
-  //   for (let i = this.doneTextures.length - 1; i >= 0; i--) {
-  //     if (progress > (i + 1) / (this.crackTextures.length + 1)) {
-  //       (this.doneMesh.material as any).map = this.doneTextures[i]; // TODO hacky typescript
-  //       this.doneMesh.material
-  //       console.log("changing done egg map");
-  //       break;
-  //     }
-  //   }
-  // }
+  updateMeshes(hp: number, progress: number) {
+    [...this.crackMeshes, ...this.doneMeshes].forEach(
+      (m) => (m.visible = false)
+    );
+    for (let i = 0; i < this.crackMeshes.length; i++) {
+      if (hp < (i + 1) / (this.crackMeshes.length + 1)) {
+        this.crackMeshes[i].visible = true;
+        break;
+      }
+    }
+    for (let i = this.doneMeshes.length - 1; i >= 0; i--) {
+      if (progress > (i + 1) / (this.doneMeshes.length + 1)) {
+        this.doneMeshes[i].visible = true;
+        break;
+      }
+    }
+  }
 
   onNewGameState(gameState: GameState): void {
     const eggState = gameState.eggs.find((egg) => egg.id === this.eggId);
@@ -146,7 +143,7 @@ class EggObject extends THREE.Group {
       throw new Error("Invalid egg id");
     }
     if (eggState.hp <= 0 || eggState.progress >= 1) return;
-    // this.updateMeshes(eggState.hp, eggState.progress);
+    this.updateMeshes(eggState.hp, eggState.progress);
     if (eggState.heldBy !== undefined) {
       this.holdingPlayerTransform = stepPlayerTransform(
         this.isHeld
@@ -179,29 +176,25 @@ class EggObject extends THREE.Group {
     Object.values(this.statusBadges).forEach((m) => {
       m.visible = false;
     });
-    if (tempDiff !== 0 || wetnessDiff !== 0) {
-      if (Math.abs(tempDiff) > Math.abs(wetnessDiff)) {
-        (tempDiff > 0
-          ? this.statusBadges.hot
-          : this.statusBadges.cold
-        ).visible = true;
-        console.log(tempDiff > 0 ? "Too hot" : "Too cold");
-      } else {
-        console.log(wetnessDiff > 0 ? "Too wet" : "Too dry");
-        (wetnessDiff > 0
-          ? this.statusBadges.wet
-          : this.statusBadges.dry
-        ).visible = true;
-      }
+    if (tempDiff !== 0) {
+      (tempDiff > 0 ? this.statusBadges.hot : this.statusBadges.cold).visible =
+        true;
+      console.log(tempDiff > 0 ? "Too hot" : "Too cold");
+    } else if (wetnessDiff !== 0) {
+      console.log(wetnessDiff > 0 ? "Too wet" : "Too dry");
+      (wetnessDiff > 0
+        ? this.statusBadges.wet
+        : this.statusBadges.dry
+      ).visible = true;
     }
 
     // EGG STATS DEBUG
-    // console.log({
-    //   temp: Math.round(eggState.temp * 1000) / 1000,
-    //   wetness: Math.round(eggState.wetness * 1000) / 1000,
-    //   hp: Math.round(eggState.hp * 1000) / 1000,
-    //   progress: eggState.progress,
-    // });
+    console.log({
+      temp: Math.round(eggState.temp * 1000) / 1000,
+      wetness: Math.round(eggState.wetness * 1000) / 1000,
+      hp: Math.round(eggState.hp * 1000) / 1000,
+      progress: eggState.progress,
+    });
   }
 
   update(delta: number) {
