@@ -253,7 +253,12 @@ const movePlayers = (gameState: GameState, mapState: MapState): number[] => {
   return playersThatMoved;
 };
 
-const resetEgg = (egg: EggState) => {
+const resetEgg = (egg: EggState, gameState: GameState) => {
+  if (egg.heldBy) {
+    const holder = gameState.players[egg.heldBy];
+    holder.heldObject = undefined;
+    egg.heldBy = undefined;
+  }
   egg.temp = 0.5;
   egg.wetness = 0.5;
   egg.hp = 1;
@@ -284,7 +289,7 @@ const updateEggState = (
       console.log("Egg hatched!");
       gameState.hatched += 1;
     }
-    resetEgg(egg);
+    resetEgg(egg, gameState);
     let pos: TileCoord;
     do {
       pos = [
