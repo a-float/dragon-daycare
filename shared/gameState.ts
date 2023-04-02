@@ -292,7 +292,7 @@ const updateEggState = (egg: EggState, mapState: MapState) => {
     egg.pos = pos;
     return;
   }
-  
+
   egg.temp += normalize(0.5 - egg.temp) / TICK_INVERVAL / 10;
   egg.wetness += normalize(0.5 - egg.wetness) / TICK_INVERVAL / 10;
   if (Math.abs(egg.temp - 0.5) < 0.01) egg.temp = 0.5;
@@ -321,12 +321,30 @@ const updateEggState = (egg: EggState, mapState: MapState) => {
   }
 };
 
+const pickUpLyingEgg = (
+  player: PlayerState,
+  idx: number,
+  gameState: GameState
+) => {
+  const eggToPickUp = gameState.eggs.find(
+    (egg) => areCoordEqual(player.pos, egg.pos) && egg.heldBy === undefined
+  );
+  if (player.heldObject === undefined && eggToPickUp) {
+    eggToPickUp.heldBy = idx;
+    eggToPickUp.pos = [-1, -1];
+    player.heldObject = eggToPickUp.id;
+  }
+};
+
 export const updateState = (
   gameState: GameState,
   mapState: MapState,
   events: UserEvent[]
 ) => {
   events.forEach((e) => applyUserEvent(gameState, mapState, e));
+  gameState.players.forEach((player, i) =>
+    pickUpLyingEgg(player, i, gameState)
+  );
   movePlayers(gameState, mapState);
   gameState.eggs.forEach((egg) => updateEggState(egg, mapState));
   // TODO update everyone on who moved where
