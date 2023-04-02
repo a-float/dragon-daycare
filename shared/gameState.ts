@@ -98,6 +98,18 @@ export function createGameState(): GameState {
           wetness: [0.8, 1],
         },
       },
+      {
+        id: "Egg#2",
+        pos: [1, 2],
+        temp: 0.5,
+        hp: 1,
+        wetness: 0.5,
+        progress: 0,
+        hatchRange: {
+          temp: [0.1, 0.3],
+          wetness: [0.8, 1],
+        },
+      },
     ],
   };
 }

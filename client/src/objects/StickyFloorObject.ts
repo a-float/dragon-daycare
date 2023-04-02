@@ -18,6 +18,7 @@ class StickyFloor extends THREE.Group implements Disposable {
       new THREE.MeshBasicMaterial({ map: texture, transparent: true })
     );
     this.add(mesh);
+    mesh.scale.setScalar(1.5);
     mesh.rotateX(Math.PI);
   }
 

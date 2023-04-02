@@ -14,8 +14,8 @@ import EggEntity from "./entities/EggEntity.js";
 import { makeEggObject } from "./objects/EggObject.js";
 import { makeBackdropObject } from "./objects/BackdropObject.js";
 import SceneryEntity from "./entities/SceneryEntity.js";
-import LocalGameStateProvider from "./gameState/localGameStateProvider.js";
-// import NetworkGameStateProvider from "./gameState/networkGameStateProvider.js";
+// import LocalGameStateProvider from "./gameState/localGameStateProvider.js";
+import NetworkGameStateProvider from "./gameState/networkGameStateProvider.js";
 
 // const createPlayerMesh = (color: THREE.ColorRepresentation) => {
 //   const geometry = new THREE.BoxGeometry(1, 1, 1);
@@ -70,7 +70,7 @@ const gameAnchor = new GameAnchor();
 scene.add(gameAnchor);
 
 const gameStateProvider: AbstractGameStateProvider =
-  new LocalGameStateProvider();
+  new NetworkGameStateProvider();
 
 // const player1Mesh = createPlayerMesh("#cc2222");
 // const player2Mesh = createPlayerMesh("#2222cc");
@@ -127,9 +127,39 @@ async function init() {
   const egg = new EggEntity(eggObj);
   gameAnchor.add(eggObj);
   world.addEntity(egg);
+
+  // Egg 2
+  const eggObj2 = await makeEggObject("Egg#2", gameStateProvider);
+  const egg2 = new EggEntity(eggObj2);
+  gameAnchor.add(eggObj2);
+  world.addEntity(egg2);
+}
+
+function ui() {
+  const heartElements = [
+    document.getElementById("heart-1"),
+    document.getElementById("heart-2"),
+    document.getElementById("heart-3"),
+  ];
+
+  const hatches = document.getElementById("hatches");
+
+  gameStateProvider.subscribe((state) => {
+    heartElements.forEach((el, idx) => {
+      if (idx < state.lifes) {
+        el?.classList.add("ActiveHeart");
+      } else {
+        el?.classList.remove("ActiveHeart");
+      }
+    });
+
+    if (hatches) hatches.innerHTML = `${state.hatched}`;
+  });
 }
 
 init();
+
+ui();
 
 function animate() {
   requestAnimationFrame(animate);

@@ -2,3 +2,48 @@
   margin: 0;
   box-sizing: border-box;
 }
+
+.HeartContainer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  height: 6rem;
+}
+
+.Heart {
+  width: 4rem;
+  height: 4rem;
+}
+
+.Heart svg {
+  width: 100%;
+  height: 100%;
+
+  fill: greenyellow;
+  opacity: 0.2;
+}
+
+.ActiveHeart svg {
+  fill: greenyellow;
+  opacity: 1;
+}
+
+.Hatches {
+  position: fixed;
+  left: 2rem;
+  bottom: 2rem;
+
+  font-weight: 100;
+  font-size: 2.5rem;
+  color: white;
+  font-family: sans-serif;
+  transform: rotate(2deg) translateY(-0.1rem);
+}
+
+.Hatches span {
+  font-weight: bold;
+}
