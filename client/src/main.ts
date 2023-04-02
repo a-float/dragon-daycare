@@ -2,17 +2,18 @@ import "./style.css";
 import ECS from "ecs-lib";
 import * as THREE from "three";
 
-import controls from "./utils/controls";
-import KeyboardSystem from "./systems/KeyboardSystem";
-import GameAnchor from "./objects/GameAnchor";
-import SceneryObject, { makeSceneryObject } from "./objects/SceneryObject";
-import LocalGameStateProvider from "./gameState/localGameStateProvider";
-import AbstractGameStateProvider from "./gameState/abstractGameStateProvider";
-import PlayerEntity from "./entities/PlayerEntity";
-import { makePlayerObject } from "./objects/PlayerObject";
-import UpdatableSystem from "./systems/UpdatableSystem";
-import EggEntity from "./entities/EggEntity";
-import { makeEggObject } from "./objects/EggObject";
+import controls from "./utils/controls.js";
+import KeyboardSystem from "./systems/KeyboardSystem.js";
+import GameAnchor from "./objects/GameAnchor.js";
+import SceneryObject, { makeSceneryObject } from "./objects/SceneryObject.js";
+import LocalGameStateProvider from "./gameState/localGameStateProvider.js";
+import AbstractGameStateProvider from "./gameState/abstractGameStateProvider.js";
+import PlayerEntity from "./entities/PlayerEntity.js";
+import { makePlayerObject } from "./objects/PlayerObject.js";
+import UpdatableSystem from "./systems/UpdatableSystem.js";
+import EggEntity from "./entities/EggEntity.js";
+import { makeEggObject } from "./objects/EggObject.js";
+import { makeBackdropObject } from "./objects/BackdropObject.js";
 
 // const createPlayerMesh = (color: THREE.ColorRepresentation) => {
 //   const geometry = new THREE.BoxGeometry(1, 1, 1);
@@ -36,7 +37,7 @@ import { makeEggObject } from "./objects/EggObject";
 // };
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color("#ddd");
+scene.background = new THREE.Color("#081a1e");
 // const camera = new THREE.OrthographicCamera(
 //   0,
 //   window.innerWidth,
@@ -88,6 +89,10 @@ async function createPlayers() {
 }
 
 async function init() {
+  // Backdrop
+  const backdropObj = await makeBackdropObject(gameStateProvider);
+  gameAnchor.add(backdropObj);
+
   //Players
   await createPlayers();
   // Egg

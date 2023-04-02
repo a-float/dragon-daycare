@@ -7,17 +7,17 @@ import {
   lerpCoords,
   areCoordEqual,
 } from "@dragon-daycare/shared";
-import loadTexture from "../utils/loadTexture";
-import AbstractGameStateProvider from "../gameState/abstractGameStateProvider";
-import { PlayerState } from "@dragon-daycare/shared/gameState";
-import { Spring } from "../utils/spring";
-import { Easing } from "../utils/smoothValue";
+import loadTexture from "../utils/loadTexture.js";
+import AbstractGameStateProvider from "../gameState/abstractGameStateProvider.js";
+import { PlayerState } from "@dragon-daycare/shared/gameState.js";
+import { Spring } from "../utils/spring.js";
+import { Easing } from "../utils/smoothValue.js";
 import vertexShader from "./player.vert?raw";
 import fragmentShader from "./player.frag?raw";
 
 const ASSETS = Promise.all([loadTexture("/dragon/dragon-idle.png")]);
 
-const colors = [0, 0.35, 0.5, 0.6] as const;
+const colors = [0, 0.35, 0.5, 0.6, 0.1, 0.8, 0.75, 0.9] as const;
 // const colors = ["#3b74ba", "#f04e32", "#f0609e", "#fbad18"] as const;
 
 export type PlayerTransform = {
@@ -147,7 +147,7 @@ class PlayerObject extends THREE.Group {
     }
   }
 
-  update(delta) {
+  update(delta: number) {
     const { pos, angle } = advancePlayerTransform(this.transform, delta);
     Spring.simulate(this.squashSpring, delta / 1000000);
 
