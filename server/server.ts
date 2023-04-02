@@ -57,7 +57,7 @@ wss.on("connection", (ws: any) => {
             ws.info.game.state.players.push({
               dir: 0,
               isMoving: false,
-              pos: ws.info.game.map.startPoints[0],
+              pos: ws.info.game.mapState.startPoints[ws.info.game.players.length],
             });
           }
           found = true;
