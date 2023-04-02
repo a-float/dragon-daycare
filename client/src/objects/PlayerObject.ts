@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import loadSvg from "../utils/loadSvg";
-import { GameState } from "../gameState/gameState";
+import { GameState } from "../../../shared/gameState";
 import AbstractGameStateProvider from "../gameState/abstractGameStateProvider";
 
 const ASSETS = Promise.all([loadSvg("/dragon/dragon-idle.svg")]);

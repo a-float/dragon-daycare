@@ -1,5 +1,5 @@
 import z from "zod";
-import { TurnDirection } from "./gameState";
+import { TurnDirection } from "./gameState.js";
 
 export type UserEvent = z.infer<typeof UserEvent>;
 export const UserEvent = z.union([

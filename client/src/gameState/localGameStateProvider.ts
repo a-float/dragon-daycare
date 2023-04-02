@@ -1,8 +1,10 @@
-import { UserEvent } from "./userEvent";
+import { parseMap, maps, UserEvent } from "@dragon-daycare/shared";
 import AbstractGameStateProvider from "./abstractGameStateProvider";
-import { createGameState, TICK_INVERVAL, updateState } from "./gameState";
-import loadMap from "../utils/loadMap";
-import mapText from "../maps/map_01.txt?raw";
+import {
+  createGameState,
+  TICK_INVERVAL,
+  updateState,
+} from "../../../shared/gameState";
 
 class LocalGameStateProvider extends AbstractGameStateProvider {
   eventsQueue: UserEvent[] = [];
@@ -10,8 +12,10 @@ class LocalGameStateProvider extends AbstractGameStateProvider {
   constructor() {
     super();
 
-    this.mapState = loadMap(mapText);
+    this.mapState = maps.MAP_0;
     this.gameState = createGameState(this.mapState);
+
+    console.log(this.mapState);
 
     setInterval(() => {
       this.update();
