@@ -1,7 +1,7 @@
 import z from "zod";
 import { UserEvent } from "./userEvent.js";
 
-export const TICK_INVERVAL = 50;
+export const TICK_INVERVAL = 70;
 
 export type TileCoord = z.infer<typeof TileCoord>;
 export const TileCoord = z.tuple([z.number().int(), z.number().int()]);

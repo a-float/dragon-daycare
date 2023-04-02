@@ -1,12 +1,21 @@
 import * as THREE from "three";
+
+import {
+  GameState,
+  TICK_INVERVAL,
+  TileCoord,
+} from "@dragon-daycare/shared/gameState";
 import loadTexture from "../utils/loadTexture";
-import { GameState } from "@dragon-daycare/shared/gameState";
 import AbstractGameStateProvider from "../gameState/abstractGameStateProvider";
 
 const ASSETS = Promise.all([loadTexture("/dragon/dragon-idle.png")]);
 
 class PlayerObject extends THREE.Group {
   unsubscribes: (() => unknown)[] = [];
+
+  private prevPos: TileCoord | null = null;
+  private nextPos: TileCoord | null = null;
+  private posInter: number = 0;
 
   constructor(
     [bodyTexture]: Awaited<typeof ASSETS>,
@@ -20,20 +29,15 @@ class PlayerObject extends THREE.Group {
     const mesh = new THREE.Mesh(
       geo,
       // new THREE.MeshBasicMaterial({ color: "#0000ff" })
-      new THREE.MeshBasicMaterial({ map: bodyTexture })
+      new THREE.MeshBasicMaterial({
+        map: bodyTexture,
+        transparent: true,
+        premultipliedAlpha: false,
+      })
     );
+    mesh.scale.setScalar(1.3);
     mesh.rotateX(Math.PI);
-    mesh.rotateZ(Math.PI / 4);
     this.add(mesh);
-
-    // eggSvg.rotateX(Math.PI);
-    // bodySvg.scale.setScalar(0.01);
-    // bodySvg.position.set(-1, -1, 0);
-    // this.add(bodySvg);
-
-    // setInterval(() => {
-    //   this.rotateY(0.1);
-    // }, 15);
 
     this.unsubscribes.push(
       gameStateProvider.subscribe((v) => this.onNewGameState(v))
@@ -43,11 +47,29 @@ class PlayerObject extends THREE.Group {
   onNewGameState(gameState: GameState): void {
     const playerState = gameState.players[this.index];
 
-    this.position.set(...playerState.pos, 0);
+    this.prevPos = [...(this.nextPos ?? playerState.pos)];
+    this.nextPos = [...playerState.pos];
+    this.posInter = 0;
+
     this.setRotationFromAxisAngle(
       new THREE.Vector3(0, 0, 1),
       (playerState.dir * Math.PI) / 2
     );
+  }
+
+  update(delta) {
+    this.posInter += delta / TICK_INVERVAL;
+    if (this.posInter > 1) {
+      this.posInter = 1;
+    }
+
+    if (this.nextPos && this.prevPos) {
+      this.position.set(
+        this.nextPos[0] * this.posInter + this.prevPos[0] * (1 - this.posInter),
+        this.nextPos[1] * this.posInter + this.prevPos[1] * (1 - this.posInter),
+        0
+      );
+    }
   }
 
   dispose() {

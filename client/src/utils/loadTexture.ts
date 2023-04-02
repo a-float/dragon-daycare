@@ -5,7 +5,12 @@ import loadingManager from "../loadingManager";
 const loader = new THREE.TextureLoader(loadingManager);
 
 async function loadTexture(url: string) {
-  return await loader.loadAsync(url);
+  const texture = await loader.loadAsync(url);
+
+  // texture.minFilter = THREE.LinearFilter;
+  // texture.magFilter = THREE.LinearFilter;
+
+  return texture;
 }
 
 export default loadTexture;

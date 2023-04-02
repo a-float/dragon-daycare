@@ -4,6 +4,7 @@ import {
   SteerableComponent,
   SteerControlsComponent,
 } from "../components/SteerableComponent";
+import { UpdatableComponent } from "../components/UpdatableComponent";
 import PlayerObject from "../objects/PlayerObject";
 
 export default class PlayerEntity extends Entity {
@@ -15,5 +16,6 @@ export default class PlayerEntity extends Entity {
     super();
     this.add(new SteerControlsComponent(controls));
     this.add(new SteerableComponent({ controlsIndex }));
+    this.add(new UpdatableComponent(playerObject));
   }
 }

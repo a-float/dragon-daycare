@@ -10,6 +10,7 @@ import LocalGameStateProvider from "./gameState/localGameStateProvider";
 import AbstractGameStateProvider from "./gameState/abstractGameStateProvider";
 import PlayerEntity from "./entities/PlayerEntity";
 import { makePlayerObject } from "./objects/PlayerObject";
+import UpdatableSystem from "./systems/UpdatableSystem";
 
 // const createPlayerMesh = (color: THREE.ColorRepresentation) => {
 //   const geometry = new THREE.BoxGeometry(1, 1, 1);
@@ -52,7 +53,7 @@ const camera = new THREE.OrthographicCamera(
   1000
 );
 
-const renderer = new THREE.WebGLRenderer();
+const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
@@ -70,6 +71,7 @@ const gameStateProvider: AbstractGameStateProvider =
 // const player2Mesh = createPlayerMesh("#2222cc");
 const world = new ECS();
 world.addSystem(new KeyboardSystem(gameStateProvider));
+world.addSystem(new UpdatableSystem());
 
 async function createPlayers() {
   const player1Obj = await makePlayerObject(0, gameStateProvider);
@@ -106,7 +108,7 @@ async function init() {
 
     // Setting up camera
     camera.position.set(state.width / 2, state.height / 2, 0);
-    camera.scale.setScalar(10);
+    camera.scale.setScalar(8);
   });
 }
 
