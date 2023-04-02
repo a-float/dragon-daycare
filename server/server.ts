@@ -5,11 +5,11 @@ import {
   updateState,
   UserEvent,
   maps,
-  parseMap,
+//  parseMap,
   createGameState,
 } from "@dragon-daycare/shared";
 const wss = new WebSocketServer({
-  port: 5555,
+  port: 1111,
 });
 
 console.log(`Server started...`, wss);
@@ -52,13 +52,16 @@ wss.on("connection", (ws: any) => {
             games[i].screens.push(ws);
             ws.info.game = games[i];
             ws.info.type = "screen";
+            if(ws.info.game.started == 1){
+                ws.send(JSON.stringify({type:5}));
+            }
           }
           found = true;
           break;
         }
       }
       if (!found) {
-        const mapState = parseMap(maps.MAP_0);
+        const mapState = maps.MAP_0;
 
         const newGame: Game = {
           code: data.code,
@@ -88,6 +91,9 @@ wss.on("connection", (ws: any) => {
             ws.info.type = "player";
             ws.info.game = games[i];
             ws.info.player_id = data.player_id;
+            if(ws.info.game.started == 1){
+                ws.send(JSON.stringify({type:5}));
+            }
           }
           break;
         }
@@ -106,6 +112,10 @@ wss.on("connection", (ws: any) => {
       ws.info.game.players.forEach((val: any, ind: number) => {
         val.info.player_id = ind;
         val.send(JSON.stringify({ type: 3, player_id: ind }));
+        val.send(JSON.stringify({type:5}));
+      });
+      ws.info.game.screens.forEach((val: any) => {
+        val.send(JSON.stringify({type: 5}));
       });
     }
   });
@@ -149,15 +159,16 @@ wss.on("connection", (ws: any) => {
 
 setInterval((_) => {
   games.forEach((game: any) => {
-    modifyState(game);
-    game.screens.forEach((screen: any) => {
-      screen.send(JSON.stringify(game.state));
+    if(game.started == 1){
+        modifyState(game);
+        game.screens.forEach((screen: any) => {
+            screen.send(JSON.stringify({type:6, state:game.state, map:game.mapState}));
+        });
+     }
     });
-  });
-}, 5000);
+}, 70);
 
 function modifyState(game: Game) {
-  game.events = [];
-
   updateState(game.state, game.mapState, game.events);
+  game.events = [];
 }
