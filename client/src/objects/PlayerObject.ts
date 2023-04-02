@@ -5,6 +5,8 @@ import AbstractGameStateProvider from "../gameState/abstractGameStateProvider";
 
 const ASSETS = Promise.all([loadSvg("/dragon/dragon-idle.svg")]);
 
+const colors = ["#3b74ba", "#f04e32", "#f0609e", "#fbad18"] as const;
+
 class PlayerObject extends THREE.Group {
   unsubscribes: (() => unknown)[] = [];
 
@@ -18,19 +20,11 @@ class PlayerObject extends THREE.Group {
     const geo = new THREE.BoxGeometry(1, 1, 1);
     const mesh = new THREE.Mesh(
       geo,
-      new THREE.MeshBasicMaterial({ color: "#0000ff" })
+      new THREE.MeshBasicMaterial({ color: colors[index] })
     );
+    mesh.scale.setScalar(0.7);
     mesh.rotateZ(Math.PI / 4);
     this.add(mesh);
-
-    // eggSvg.rotateX(Math.PI);
-    // bodySvg.scale.setScalar(0.01);
-    // bodySvg.position.set(-1, -1, 0);
-    // this.add(bodySvg);
-
-    // setInterval(() => {
-    //   this.rotateY(0.1);
-    // }, 15);
 
     this.unsubscribes.push(
       gameStateProvider.subscribe((v) => this.onNewGameState(v))
@@ -39,7 +33,6 @@ class PlayerObject extends THREE.Group {
 
   onNewGameState(gameState: GameState): void {
     const playerState = gameState.players[this.index];
-
     this.position.set(...playerState.pos, 0);
   }
 

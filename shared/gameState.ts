@@ -1,7 +1,7 @@
 import z from "zod";
 import { UserEvent } from "./userEvent.js";
 
-export const TICK_INVERVAL = 50;
+export const TICK_INVERVAL = 16;
 
 export type TileCoord = z.infer<typeof TileCoord>;
 export const TileCoord = z.tuple([z.number().int(), z.number().int()]);
@@ -42,6 +42,10 @@ export type EggState = z.infer<typeof EggState>;
 export const EggState = z.object({
   id: ObjectID,
   pos: TileCoord,
+  wetness: z.number(),
+  hp: z.number(),
+  temp: z.number(),
+  heldBy: z.number().int().optional(),
 });
 
 export type GameState = z.infer<typeof GameState>;
@@ -89,7 +93,10 @@ export function createGameState(mapState: MapState): GameState {
     eggs: [
       {
         id: "Egg#1",
-        pos: [0, 0],
+        pos: [1, 0],
+        temp: 0.5,
+        hp: 1,
+        wetness: 0.5,
       },
     ],
   };
@@ -130,7 +137,6 @@ const applyUserEvent = (
   mapState: MapState,
   event: UserEvent
 ) => {
-  console.log(`Event: ${JSON.stringify(event)}`);
   const player = gameState.players[event.player];
 
   if (player.isMoving) return;
@@ -146,13 +152,42 @@ const applyUserEvent = (
   }
 
   if (event.type === "action") {
-    console.log("Action performed");
+    const targetTile = getNextPos(player.pos, player.dir);
+    const heldEgg = gameState.eggs.find((egg) => egg.heldBy === event.player);
+    if (!heldEgg) {
+      const egg = gameState.eggs.find((egg) =>
+        areCoordEqual(egg.pos, targetTile)
+      );
+      if (egg && !egg.heldBy) {
+        egg.heldBy = event.player;
+        egg.pos = [-1, -1];
+      }
+    } else {
+      const isTargetTileTaken = !!gameState.eggs.find((egg) =>
+        areCoordEqual(egg.pos, targetTile)
+      );
+      const otherPlayerIdx = gameState.players.findIndex((p) =>
+        areCoordEqual(p.pos, targetTile)
+      );
+      const otherPlayer = gameState.players[otherPlayerIdx];
+      if (otherPlayer && !otherPlayer.heldObject) {
+        otherPlayer.heldObject = player.heldObject;
+        player.heldObject = undefined;
+        heldEgg.heldBy = otherPlayerIdx;
+        return;
+      }
+      if (!isTargetTileTaken) {
+        if (!heldEgg) throw new Error("I lost the egg... :(");
+        else heldEgg.pos = targetTile;
+        player.heldObject = undefined;
+        heldEgg.heldBy = undefined;
+      }
+    }
   }
 };
 
 const movePlayers = (gameState: GameState, mapState: MapState): number[] => {
   const playersThatMoved: number[] = [];
-  // each player's preferred next tile
   const nextCoords = gameState.players.map((player) => {
     if (!player.isMoving) return player.pos;
     const next = getNextPos(player.pos, player.dir);
@@ -160,40 +195,53 @@ const movePlayers = (gameState: GameState, mapState: MapState): number[] => {
   });
 
   gameState.players.forEach((player, i) => {
-    if (player.isMoving) {
-      const next = nextCoords[i];
+    if (!player.isMoving || playersThatMoved.includes(i)) return;
+    const playerNextPos = nextCoords[i];
+    if (!areCoordEqual(playerNextPos, getNextPos(player.pos, player.dir))) {
+      player.isMoving = false;
+      return;
+    }
+    for (let j = 0; j < gameState.players.length; j++) {
+      if (i === j) continue;
+      const other = gameState.players[j];
+      const otherNextPos = nextCoords[j];
+      // collision with other not moving
+      if (!other.isMoving && areCoordEqual(playerNextPos, otherNextPos)) {
+        player.isMoving = false;
+        return;
+      }
+      // head on collision
+      if (
+        other.isMoving &&
+        areCoordEqual(player.pos, other.pos) &&
+        (player.dir + other.dir) % 2 === 0 &&
+        player.dir !== other.dir
+      ) {
+        player.dir = ((player.dir + 2) % 4) as unknown as TurnDirection;
+        nextCoords[i] = getNextPos(player.pos, player.dir);
+        player.pos = nextCoords[i];
+        playersThatMoved.push(i);
 
-      for (let j = 0; j < gameState.players.length; j++) {
-        if (i === j) continue;
-
-        const otherNext = nextCoords[j];
-        if (areCoordEqual(next, otherNext)) {
-          // collision about to occur
-          if (j < i || !gameState.players[j].isMoving) {
-            // bounce back, other player has a higher priority to be on this tile
-            player.dir = ((player.dir + 2) % 4) as unknown as TurnDirection;
-            const newNext = getNextPos(player.pos, player.dir);
-            //
-            if (canStandOnCoords(mapState, newNext)) {
-              nextCoords[i] = newNext;
-              player.pos = newNext;
-              playersThatMoved.push(i);
-              // TODO earlier player might have actually took that place, might act up in some edge cases
-            } else {
-              player.isMoving = false;
-            }
-            break;
-          }
-        } else {
-          // all good, take the spot
-          if (!areCoordEqual(player.pos, next)) {
-            player.pos = next;
-            playersThatMoved.push(i);
-          } else {
-            player.isMoving = false;
-          }
+        other.dir = ((other.dir + 2) % 4) as unknown as TurnDirection;
+        nextCoords[j] = getNextPos(other.pos, other.dir);
+        other.pos = nextCoords[j];
+        playersThatMoved.push(j);
+      }
+      // perpendicular collision
+      if (other.isMoving && (player.dir + other.dir) % 2 === 1) {
+        if (areCoordEqual(playerNextPos, otherNextPos)) {
+          // would collide - decide priority
+          const toStop = Math.max(i, j);
+          const toKeepMoving = Math.min(i, j);
+          gameState.players[toStop].isMoving = false;
+          gameState.players[toKeepMoving].pos = nextCoords[toKeepMoving];
+          playersThatMoved.push(toKeepMoving);
         }
       }
+    }
+    if (!playersThatMoved.includes(i)) {
+      player.pos = playerNextPos;
+      playersThatMoved.push(i);
     }
   });
 
@@ -208,10 +256,5 @@ export const updateState = (
   events.forEach((e) => applyUserEvent(gameState, mapState, e));
 
   const playersThatMoved = movePlayers(gameState, mapState);
-
-  playersThatMoved.forEach((playerId) => {
-    console.log(
-      `Player ${playerId} has moved in direction ${gameState.players[playerId].dir}`
-    );
-  });
+  // TODO update everyone on who moved where
 };

@@ -13,7 +13,7 @@ const controls = {
     left: "ArrowLeft",
     up: "ArrowUp",
     right: "ArrowRight",
-    action: "enter",
+    action: "Enter",
   },
 } satisfies Record<string, Controls>;
 

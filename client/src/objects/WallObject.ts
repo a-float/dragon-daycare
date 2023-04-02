@@ -12,7 +12,7 @@ class WallObject extends THREE.Group implements Disposable {
     this.geo = new THREE.BoxGeometry(1, 1, 1);
     const mesh = new THREE.Mesh(
       this.geo,
-      new THREE.MeshBasicMaterial({ color: "#00ff00" })
+      new THREE.MeshBasicMaterial({ color: "#777" })
     );
     this.add(mesh);
   }
