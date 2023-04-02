@@ -4,20 +4,52 @@ import {
   GameState,
   TICK_INVERVAL,
   TileCoord,
-} from "@dragon-daycare/shared/gameState";
+  lerpCoords,
+} from "@dragon-daycare/shared";
 import loadTexture from "../utils/loadTexture";
 import AbstractGameStateProvider from "../gameState/abstractGameStateProvider";
+import { PlayerState } from "@dragon-daycare/shared/gameState";
 
 const ASSETS = Promise.all([loadTexture("/dragon/dragon-idle.png")]);
 
 const colors = ["#3b74ba", "#f04e32", "#f0609e", "#fbad18"] as const;
 
+export type PlayerTransform = {
+  prevPos: TileCoord | null;
+  nextPos: TileCoord | null;
+  interPos: number;
+};
+
+export function stepPlayerTransform(
+  prev: PlayerTransform,
+  player: PlayerState
+): PlayerTransform {
+  return {
+    prevPos: [...(prev.nextPos ?? player.pos)],
+    nextPos: [...player.pos],
+    interPos: 0,
+  };
+}
+
+export function advancePlayerTransform(curr: PlayerTransform, delta: number) {
+  curr.interPos += delta / TICK_INVERVAL;
+  if (curr.interPos > 1) {
+    curr.interPos = 1;
+  }
+
+  return {
+    pos: lerpCoords(curr.prevPos!, curr.nextPos!, curr.interPos),
+  };
+}
+
 class PlayerObject extends THREE.Group {
   unsubscribes: (() => unknown)[] = [];
 
-  private prevPos: TileCoord | null = null;
-  private nextPos: TileCoord | null = null;
-  private posInter: number = 0;
+  private transform: PlayerTransform = {
+    prevPos: null,
+    nextPos: null,
+    interPos: 0,
+  };
 
   constructor(
     [bodyTexture]: Awaited<typeof ASSETS>,
@@ -50,9 +82,7 @@ class PlayerObject extends THREE.Group {
   onNewGameState(gameState: GameState): void {
     const playerState = gameState.players[this.index];
 
-    this.prevPos = [...(this.nextPos ?? playerState.pos)];
-    this.nextPos = [...playerState.pos];
-    this.posInter = 0;
+    this.transform = stepPlayerTransform(this.transform, playerState);
 
     this.setRotationFromAxisAngle(
       new THREE.Vector3(0, 0, 1),
@@ -61,18 +91,9 @@ class PlayerObject extends THREE.Group {
   }
 
   update(delta) {
-    this.posInter += delta / TICK_INVERVAL;
-    if (this.posInter > 1) {
-      this.posInter = 1;
-    }
+    const { pos } = advancePlayerTransform(this.transform, delta);
 
-    if (this.nextPos && this.prevPos) {
-      this.position.set(
-        this.nextPos[0] * this.posInter + this.prevPos[0] * (1 - this.posInter),
-        this.nextPos[1] * this.posInter + this.prevPos[1] * (1 - this.posInter),
-        0
-      );
-    }
+    this.position.set(...pos, 0);
   }
 
   dispose() {

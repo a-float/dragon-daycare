@@ -1,14 +1,8 @@
 import z from "zod";
+import { areCoordEqual, TileCoord } from "./tileCoord.js";
 import { UserEvent } from "./userEvent.js";
 
 export const TICK_INVERVAL = 70;
-
-export type TileCoord = z.infer<typeof TileCoord>;
-export const TileCoord = z.tuple([z.number().int(), z.number().int()]);
-
-function areCoordEqual(a: TileCoord, b: TileCoord) {
-  return a[0] === b[0] && a[1] === b[1];
-}
 
 export type TurnDirection = z.infer<typeof TurnDirection>;
 export const TurnDirection = z.union([
