@@ -28,6 +28,10 @@ class EggObject extends THREE.Group {
     prevPos: null,
     nextPos: null,
     interPos: 0,
+
+    prevAngle: 0,
+    nextAngle: 0,
+    interAngle: 0,
   };
   private playerHoldFactor = new SmoothValue(0, Easing.easeOutQuad);
 
@@ -56,7 +60,7 @@ class EggObject extends THREE.Group {
         premultipliedAlpha: false,
       })
     );
-    mesh.scale.setScalar(0.8);
+    mesh.scale.setScalar(0.7);
     mesh.translateZ(10);
     mesh.rotateX(Math.PI);
 
@@ -81,6 +85,10 @@ class EggObject extends THREE.Group {
               prevPos: null,
               nextPos: null,
               interPos: 0,
+
+              prevAngle: 0,
+              nextAngle: 0,
+              interAngle: 0,
             },
         gameState.players[eggState.heldBy]
       );
