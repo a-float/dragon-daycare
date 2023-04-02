@@ -1,6 +1,6 @@
 import { Entity, System } from "ecs-lib";
 
-import { UpdatableComponent } from "../components/UpdatableComponent";
+import { UpdatableComponent } from "../components/UpdatableComponent.js";
 
 export default class UpdatableSystem extends System {
   constructor() {

@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import loadingManager from "../loadingManager";
+import loadingManager from "../loadingManager.js";
 
 // instantiate a loader
 const loader = new THREE.TextureLoader(loadingManager);

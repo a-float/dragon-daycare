@@ -1,14 +1,14 @@
 import * as THREE from "three";
 
 import { GameState, lerpCoords, TileCoord } from "@dragon-daycare/shared";
-import AbstractGameStateProvider from "../gameState/abstractGameStateProvider";
-import SmoothValue, { Easing } from "../utils/smoothValue";
-import loadTexture from "../utils/loadTexture";
+import AbstractGameStateProvider from "../gameState/abstractGameStateProvider.js";
+import SmoothValue, { Easing } from "../utils/smoothValue.js";
+import loadTexture from "../utils/loadTexture.js";
 import {
   advancePlayerTransform,
   PlayerTransform,
   stepPlayerTransform,
-} from "./PlayerObject";
+} from "./PlayerObject.js";
 
 const ASSETS = Promise.all([
   loadTexture("/egg/egg_base.png"),
@@ -103,7 +103,7 @@ class EggObject extends THREE.Group {
         premultipliedAlpha: false,
       })
     );
-    mesh.scale.setScalar(0.7);
+    mesh.scale.setScalar(0.6);
     mesh.translateZ(10);
     mesh.rotateX(Math.PI);
     this.add(mesh);

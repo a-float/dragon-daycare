@@ -1,12 +1,12 @@
 import { Entity, System } from "ecs-lib";
 
-import KeyboardState from "../utils/KeyboardState";
+import KeyboardState from "../utils/KeyboardState.js";
 import {
   SteerableComponent,
   SteerControlsComponent,
-} from "../components/SteerableComponent";
-import AbstractGameStateProvider from "../gameState/abstractGameStateProvider";
-import { TurnDirection } from "../../../shared/gameState";
+} from "../components/SteerableComponent.js";
+import AbstractGameStateProvider from "../gameState/abstractGameStateProvider.js";
+import { TurnDirection } from "../../../shared/gameState.js";
 
 export default class KeyboardSystem extends System {
   moveDir: TurnDirection | null = null;

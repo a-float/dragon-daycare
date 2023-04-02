@@ -3,7 +3,7 @@
     "target": "ESNext",
     "useDefineForClassFields": true,
     "module": "ESNext",
-    "lib": ["ESNext", "ES2021"],
+    "lib": ["ESNext", "DOM"],
     "moduleResolution": "nodenext",
     "strict": true,
     "resolveJsonModule": true,
@@ -14,7 +14,6 @@
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "skipLibCheck": true,
-    "allowSyntheticDefaultImports": true
   },
-  "include": ["./*"]
+  "include": ["./src"]
 }

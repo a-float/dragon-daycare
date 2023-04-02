@@ -1,10 +1,10 @@
-import { parseMap, maps, UserEvent } from "@dragon-daycare/shared";
-import AbstractGameStateProvider from "./abstractGameStateProvider";
+import { maps, UserEvent } from "@dragon-daycare/shared";
+import AbstractGameStateProvider from "./abstractGameStateProvider.js";
 import {
   createGameState,
   TICK_INVERVAL,
   updateState,
-} from "../../../shared/gameState";
+} from "../../../shared/gameState.js";
 
 class LocalGameStateProvider extends AbstractGameStateProvider {
   eventsQueue: UserEvent[] = [];
@@ -13,7 +13,21 @@ class LocalGameStateProvider extends AbstractGameStateProvider {
     super();
 
     this.mapState = maps.MAP_0;
-    this.gameState = createGameState(this.mapState);
+    this.gameState = createGameState();
+
+    // Player 0
+    this.gameState.players.push({
+      pos: this.mapState.startPoints[0],
+      dir: 0,
+      isMoving: false,
+    });
+
+    // Player 1
+    this.gameState.players.push({
+      pos: this.mapState.startPoints[1],
+      dir: 0,
+      isMoving: false,
+    });
 
     console.log(this.mapState);
 

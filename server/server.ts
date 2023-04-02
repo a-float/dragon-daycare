@@ -54,6 +54,11 @@ wss.on("connection", (ws: any) => {
             if (ws.info.game.started == 1) {
               ws.send(JSON.stringify({ type: 5 }));
             }
+            ws.info.game.state.players.push({
+              dir: 0,
+              isMoving: false,
+              pos: ws.info.game.map.startPoints[0],
+            });
           }
           found = true;
           break;
@@ -66,7 +71,7 @@ wss.on("connection", (ws: any) => {
           code: data.code,
           players: [],
           screens: [ws],
-          state: createGameState(mapState),
+          state: createGameState(),
           mapState: mapState,
           events: [],
           started: 0,

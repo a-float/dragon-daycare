@@ -1,13 +1,15 @@
 import * as THREE from "three";
-import { MapState } from "../../../shared/gameState";
-import { Disposable } from "./disposable";
+import { MapState } from "../../../shared/gameState.js";
+import { Disposable } from "./disposable.js";
 
-import WallObject from "./WallObject";
-import DeviceObject from "./DeviceObject";
-import StickyFloor from "./StickyFloorObject";
+import { makeWallObject } from "./WallObject.js";
+import { makeDeviceObject } from "./DeviceObject.js";
+import StickyFloor, { makeStickyFloorObject } from "./StickyFloorObject.js";
+import { Updatable } from "../components/UpdatableComponent.js";
 
 class SceneryObject extends THREE.Group implements Disposable {
   disposableChildren: Disposable[] = [];
+  updatable: Updatable[] = [];
 
   constructor(mapState: MapState) {
     super();
@@ -18,19 +20,27 @@ class SceneryObject extends THREE.Group implements Disposable {
 
       const tile = mapState.tiles[i];
       if (tile.device) {
-        const obj = new DeviceObject(x, y, tile.device);
-        this.add(obj);
-        this.disposableChildren.push(obj);
+        makeDeviceObject(x, y, tile.device).then((obj) => {
+          this.add(obj);
+          this.disposableChildren.push(obj);
+        });
       } else if (tile.isSticky) {
-        const obj = new StickyFloor(x, y);
-        this.add(obj);
-        this.disposableChildren.push(obj);
+        makeStickyFloorObject(x, y).then((obj) => {
+          this.add(obj);
+          this.disposableChildren.push(obj);
+        });
       } else if (tile.isWall) {
-        const obj = new WallObject(x, y);
-        this.add(obj);
-        this.disposableChildren.push(obj);
+        makeWallObject(x, y).then((w) => {
+          this.add(w);
+          this.disposableChildren.push(w);
+          console.log(`Making wall`, w);
+        });
       }
     }
+  }
+
+  update(delta: number) {
+    this.updatable.forEach((u) => u.update(delta));
   }
 
   dispose() {

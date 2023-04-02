@@ -51,7 +51,7 @@ export const EggState = z.object({
 
 export type GameState = z.infer<typeof GameState>;
 export const GameState = z.object({
-  players: z.tuple([PlayerState, PlayerState]),
+  players: z.array(PlayerState),
   eggs: z.array(EggState),
 });
 
@@ -78,20 +78,9 @@ export const MapState = z.object({
   startPoints: z.array(TileCoord),
 });
 
-export function createGameState(mapState: MapState): GameState {
+export function createGameState(): GameState {
   return {
-    players: [
-      {
-        dir: 0,
-        isMoving: false,
-        pos: mapState.startPoints[0],
-      },
-      {
-        dir: 0,
-        isMoving: false,
-        pos: mapState.startPoints[1],
-      },
-    ],
+    players: [],
     eggs: [
       {
         id: "Egg#1",

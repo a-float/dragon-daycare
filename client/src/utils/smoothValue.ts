@@ -3,10 +3,10 @@ export type EasingFunc = (t: number) => number;
 const lerp = (a: number, b: number, t: number) => b * t + a * (1 - t);
 
 export const Easing = {
-  linear: (t) => t,
-  easeInQuad: (t) => t * t,
-  easeOutQuad: (t) => 1 - (1 - t) * (1 - t),
-  easeInOut: (t) => t * t * (3.0 - 2.0 * t),
+  linear: (t: number) => t,
+  easeInQuad: (t: number) => t * t,
+  easeOutQuad: (t: number) => 1 - (1 - t) * (1 - t),
+  easeInOut: (t: number) => t * t * (3.0 - 2.0 * t),
 };
 
 class SmoothValue {
@@ -15,10 +15,7 @@ class SmoothValue {
   private _inter: number = 0;
   private _step: number = 0.1;
 
-  constructor(
-    private _value: number,
-    private easing: EasingFunc = Easing.easeInOut
-  ) {
+  constructor(_value: number, private easing: EasingFunc = Easing.easeInOut) {
     this._prev = _value;
     this._next = _value;
   }

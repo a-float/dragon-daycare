@@ -1,20 +1,24 @@
 import * as THREE from "three";
-import { Disposable } from "./disposable";
+import loadTexture from "../utils/loadTexture.js";
+import { Disposable } from "./disposable.js";
+
+const ASSETS = Promise.all([loadTexture("/sticky-floor.png")]);
 
 class StickyFloor extends THREE.Group implements Disposable {
-  geo: THREE.BoxGeometry;
+  geo: THREE.PlaneGeometry;
 
-  constructor(x: number, y: number) {
+  constructor([texture]: Awaited<typeof ASSETS>, x: number, y: number) {
     super();
 
     this.position.set(x, y, 0);
 
-    this.geo = new THREE.BoxGeometry(1, 1, 1);
+    this.geo = new THREE.PlaneGeometry(1, 1);
     const mesh = new THREE.Mesh(
       this.geo,
-      new THREE.MeshBasicMaterial({ color: "#cacaca" })
+      new THREE.MeshBasicMaterial({ map: texture, transparent: true })
     );
     this.add(mesh);
+    mesh.rotateX(Math.PI);
   }
 
   dispose(): void {
@@ -23,7 +27,7 @@ class StickyFloor extends THREE.Group implements Disposable {
 }
 
 export async function makeStickyFloorObject(x: number, y: number) {
-  return new StickyFloor(x, y);
+  return new StickyFloor(await ASSETS, x, y);
 }
 
 export default StickyFloor;

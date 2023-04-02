@@ -1,4 +1,10 @@
-export const Spring = (x, y, mass, stiffness, viscosity) => ({
+export const Spring = (
+  x: number,
+  y: number,
+  mass: number,
+  stiffness: number,
+  viscosity: number
+) => ({
   prevX: x,
   prevY: y,
   currX: x,
@@ -8,7 +14,7 @@ export const Spring = (x, y, mass, stiffness, viscosity) => ({
   viscosity,
 });
 
-Spring.copy = (spring) => ({
+Spring.copy = (spring: ReturnType<typeof Spring>) => ({
   prevX: spring.prevX,
   prevY: spring.prevY,
   currX: spring.currX,
@@ -18,7 +24,7 @@ Spring.copy = (spring) => ({
   viscosity: spring.viscosity,
 });
 
-Spring.set = (spring, x, y) => {
+Spring.set = (spring: ReturnType<typeof Spring>, x: number, y: number) => {
   spring.prevX = x;
   spring.prevY = y;
   spring.currX = x;
@@ -27,14 +33,14 @@ Spring.set = (spring, x, y) => {
 };
 
 // Accelerate spring end a new position
-Spring.acc = (spring, x, y) => {
+Spring.acc = (spring: ReturnType<typeof Spring>, x: number, y: number) => {
   spring.currX = spring.currX + x;
   spring.currY = spring.currY + y;
   return spring;
 };
 
 // Shift particle location
-Spring.shift = (spring, x, y) => {
+Spring.shift = (spring: ReturnType<typeof Spring>, x: number, y: number) => {
   spring.prevX = spring.currX;
   spring.prevY = spring.currY;
   spring.currX = x;
@@ -43,7 +49,7 @@ Spring.shift = (spring, x, y) => {
 };
 
 // Verlet-integrate a particle's momentum.
-Spring.integrate = (spring) =>
+Spring.integrate = (spring: ReturnType<typeof Spring>) =>
   Spring.shift(
     spring,
     spring.currX + (spring.currX - spring.prevX) * (1.0 - spring.viscosity),
@@ -52,9 +58,15 @@ Spring.integrate = (spring) =>
 
 // Calculate the mangitude of a vector (length)
 // Returns a Number
-const mag = (x, y) => Math.sqrt(x * x + y * y);
+const mag = (x: number, y: number) => Math.sqrt(x * x + y * y);
 
-const hookeForce = (n, mass, dist, stiffness, deltaT) => {
+const hookeForce = (
+  n: number,
+  mass: number,
+  dist: number,
+  stiffness: number,
+  deltaT: number
+) => {
   if (dist < 0.00001) {
     return 0;
   }
@@ -65,7 +77,7 @@ const hookeForce = (n, mass, dist, stiffness, deltaT) => {
   return acc;
 };
 
-Spring.isResting = (spring) =>
+Spring.isResting = (spring: ReturnType<typeof Spring>) =>
   Math.abs(spring.currX) < 0.1 &&
   Math.abs(spring.currY) < 0.1 &&
   Math.abs(spring.currX - spring.prevX) < 0.1 &&
@@ -74,7 +86,7 @@ Spring.isResting = (spring) =>
 // Advance spring to next state. Mutates spring.
 // If you want new state objects every time, use Spring.copy, then pass in
 // copied spring.
-Spring.tick = (spring, deltaT) => {
+Spring.tick = (spring: ReturnType<typeof Spring>, deltaT: number) => {
   // Calculate Euclidian distance (2D length) of a spring.
   const dist = mag(spring.currX, spring.currY);
 
@@ -102,5 +114,5 @@ Spring.tick = (spring, deltaT) => {
   return spring;
 };
 
-Spring.simulate = (spring, deltaT) =>
+Spring.simulate = (spring: ReturnType<typeof Spring>, deltaT: number) =>
   Spring.tick(Spring.integrate(spring), deltaT);
