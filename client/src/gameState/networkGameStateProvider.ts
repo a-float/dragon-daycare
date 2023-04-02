@@ -1,6 +1,5 @@
-import { UserEvent } from "@dragon-daycare/shared";
-import AbstractGameStateProvider from "./abstractGameStateProvider";
-import { GameState, MapState } from "@dragon-daycare/shared/gameState";
+import { UserEvent, GameState, MapState } from "@dragon-daycare/shared";
+import AbstractGameStateProvider from "./abstractGameStateProvider.js";
 
 class NetworkGameStateProvider extends AbstractGameStateProvider {
   private ws: WebSocket;
@@ -33,7 +32,7 @@ class NetworkGameStateProvider extends AbstractGameStateProvider {
     });
   }
 
-  sendEvent(event: UserEvent): void {
+  sendEvent(_event: UserEvent): void {
     // Not supported on the view-only client
   }
 }

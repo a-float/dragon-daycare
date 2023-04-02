@@ -4,7 +4,7 @@ import { Disposable } from "./disposable.js";
 
 import { makeWallObject } from "./WallObject.js";
 import { makeDeviceObject } from "./DeviceObject.js";
-import StickyFloor, { makeStickyFloorObject } from "./StickyFloorObject.js";
+import { makeStickyFloorObject } from "./StickyFloorObject.js";
 import { Updatable } from "../components/UpdatableComponent.js";
 
 class SceneryObject extends THREE.Group implements Disposable {
@@ -23,6 +23,7 @@ class SceneryObject extends THREE.Group implements Disposable {
         makeDeviceObject(x, y, tile.device).then((obj) => {
           this.add(obj);
           this.disposableChildren.push(obj);
+          this.updatable.push(obj);
         });
       } else if (tile.isSticky) {
         makeStickyFloorObject(x, y).then((obj) => {

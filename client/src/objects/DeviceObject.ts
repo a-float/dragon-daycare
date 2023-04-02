@@ -59,10 +59,8 @@ class DeviceObject extends THREE.Group implements Disposable {
   }
 
   update(delta: number) {
-    this.boilsFrame += (delta / 1000) * 5;
-    if (this.boilsFrame >= this.boilsFrames.length) {
-      this.boilsFrame -= this.boilsFrames.length;
-    }
+    this.boilsFrame =
+      (this.boilsFrame + (delta / 1000) * 10) % this.boilsFrames.length;
 
     this.boilsMaterial.map = this.boilsFrames[Math.floor(this.boilsFrame)];
     this.boilsMaterial.needsUpdate = true;

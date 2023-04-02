@@ -6,7 +6,6 @@ import controls from "./utils/controls.js";
 import KeyboardSystem from "./systems/KeyboardSystem.js";
 import GameAnchor from "./objects/GameAnchor.js";
 import SceneryObject, { makeSceneryObject } from "./objects/SceneryObject.js";
-import LocalGameStateProvider from "./gameState/localGameStateProvider.js";
 import AbstractGameStateProvider from "./gameState/abstractGameStateProvider.js";
 import PlayerEntity from "./entities/PlayerEntity.js";
 import { makePlayerObject } from "./objects/PlayerObject.js";
@@ -15,6 +14,8 @@ import EggEntity from "./entities/EggEntity.js";
 import { makeEggObject } from "./objects/EggObject.js";
 import { makeBackdropObject } from "./objects/BackdropObject.js";
 import SceneryEntity from "./entities/SceneryEntity.js";
+import LocalGameStateProvider from "./gameState/localGameStateProvider.js";
+// import NetworkGameStateProvider from "./gameState/networkGameStateProvider.js";
 
 // const createPlayerMesh = (color: THREE.ColorRepresentation) => {
 //   const geometry = new THREE.BoxGeometry(1, 1, 1);

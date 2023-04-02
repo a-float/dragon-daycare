@@ -41,6 +41,8 @@ class EggObject extends THREE.Group {
   private playerHoldFactor = new SmoothValue(0, Easing.easeOutQuad);
   doneMeshes: THREE.Mesh[];
   crackMeshes: THREE.Mesh[];
+  // private crackTextures: THREE.Texture[];
+  // private doneTextures: THREE.Texture[];
   private statusBadges: Record<"dry" | "wet" | "cold" | "hot", THREE.Mesh>;
 
   constructor(
@@ -61,6 +63,8 @@ class EggObject extends THREE.Group {
     gameStateProvider: AbstractGameStateProvider
   ) {
     super();
+    // this.crackTextures = [eggCrack03, eggCrack02, eggCrack01];
+    // this.doneTextures = [eggDone01, eggDone02, eggDone03]; // reversed direction lmaao
     const geo = new THREE.PlaneGeometry(1, 1);
     this.prepareMesh(geo, eggBase);
     this.crackMeshes = [eggCrack03, eggCrack02, eggCrack01].map((txt) =>
