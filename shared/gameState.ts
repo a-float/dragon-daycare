@@ -66,6 +66,7 @@ export type TileState = z.infer<typeof TileState>;
 export const TileState = z.object({
   isWall: z.boolean(),
   device: Device.optional(),
+  isSticky: z.boolean().optional(),
 });
 
 export type MapState = z.infer<typeof MapState>;
@@ -126,9 +127,7 @@ const canStandOnCoords = (mapState: MapState, tilePos: TileCoord): boolean => {
   ) {
     return false;
   }
-
   const tile = mapState.tiles[mapState.width * tilePos[1] + tilePos[0]];
-
   return !tile.isWall;
 };
 
@@ -138,19 +137,14 @@ const applyUserEvent = (
   event: UserEvent
 ) => {
   const player = gameState.players[event.player];
-
   if (player.isMoving) return;
-
   if (event.type === "move") {
     player.dir = event.dir;
-
     const newPos = getNextPos(player.pos, event.dir);
-
     if (canStandOnCoords(mapState, newPos)) {
       player.isMoving = true;
     }
   }
-
   if (event.type === "action") {
     const targetTile = getNextPos(player.pos, player.dir);
     const heldEgg = gameState.eggs.find((egg) => egg.heldBy === event.player);
@@ -184,6 +178,13 @@ const applyUserEvent = (
       }
     }
   }
+};
+
+const isOnStickyFloor = (
+  mapState: MapState,
+  tilePos: TileCoord
+): boolean | undefined => {
+  return mapState.tiles[mapState.width * tilePos[1] + tilePos[0]]?.isSticky;
 };
 
 const movePlayers = (gameState: GameState, mapState: MapState): number[] => {
@@ -244,6 +245,11 @@ const movePlayers = (gameState: GameState, mapState: MapState): number[] => {
       playersThatMoved.push(i);
     }
   });
+  for (const idx of playersThatMoved) {
+    if (isOnStickyFloor(mapState, gameState.players[idx].pos)) {
+      gameState.players[idx].isMoving = false;
+    }
+  }
 
   return playersThatMoved;
 };

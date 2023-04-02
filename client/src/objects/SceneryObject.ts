@@ -4,6 +4,7 @@ import { Disposable } from "./disposable";
 
 import WallObject from "./WallObject";
 import DeviceObject from "./DeviceObject";
+import StickyFloor from "./StickyFloorObject";
 
 class SceneryObject extends THREE.Group implements Disposable {
   disposableChildren: Disposable[] = [];
@@ -18,6 +19,10 @@ class SceneryObject extends THREE.Group implements Disposable {
       const tile = mapState.tiles[i];
       if (tile.device) {
         const obj = new DeviceObject(x, y, tile.device);
+        this.add(obj);
+        this.disposableChildren.push(obj);
+      } else if (tile.isSticky) {
+        const obj = new StickyFloor(x, y);
         this.add(obj);
         this.disposableChildren.push(obj);
       } else if (tile.isWall) {

@@ -28,6 +28,10 @@ class KeyboardState {
     return this.pressedKeys.has(key);
   }
 
+  pressedWithClear(key: string): boolean {
+    return this.pressedKeys.delete(key);
+  }
+
   clearKey(key: string) {
     this.pressedKeys.delete(key);
   }

@@ -13,6 +13,7 @@ const parseMap = (text: string): MapState => {
     .split("")
     .map((c, idx) => {
       if (c === ".") return { isWall: false };
+      else if (c === ",") return { isWall: false, isSticky: true } as const;
       else if (c === "#") return { isWall: true };
       else if (c.match(/^\d$/)) {
         playerStarts[parseInt(c)] = [idx % width, Math.floor(idx / width)];

@@ -21,20 +21,19 @@ export default class KeyboardSystem extends System {
 
     const prevMoveDir = this.moveDir;
 
-    if (KeyboardState.pressed(controls.right)) {
+    if (KeyboardState.pressedWithClear(controls.right)) {
       this.moveDir = 1;
-    } else if (KeyboardState.pressed(controls.left)) {
+    } else if (KeyboardState.pressedWithClear(controls.left)) {
       this.moveDir = 3;
-    } else if (KeyboardState.pressed(controls.up)) {
+    } else if (KeyboardState.pressedWithClear(controls.up)) {
       this.moveDir = 0;
-    } else if (KeyboardState.pressed(controls.down)) {
+    } else if (KeyboardState.pressedWithClear(controls.down)) {
       this.moveDir = 2;
-    } else if (KeyboardState.pressed(controls.action)) {
+    } else if (KeyboardState.pressedWithClear(controls.action)) {
       this.gameStateProvider.sendEvent({
         type: "action",
         player: controlsIndex,
       });
-      KeyboardState.clearKey(controls.action);
       return;
     } else {
       this.moveDir = null;
