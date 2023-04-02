@@ -23,6 +23,7 @@ class SceneryObject extends THREE.Group implements Disposable {
         makeDeviceObject(x, y, tile.device).then((obj) => {
           this.add(obj);
           this.disposableChildren.push(obj);
+          this.updatable.push(obj);
         });
       } else if (tile.isSticky) {
         makeStickyFloorObject(x, y).then((obj) => {
