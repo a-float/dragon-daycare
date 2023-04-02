@@ -9,11 +9,12 @@ import {
 } from "@dragon-daycare/shared";
 import loadTexture from "../utils/loadTexture";
 import AbstractGameStateProvider from "../gameState/abstractGameStateProvider";
-import { PlayerState } from "@dragon-daycare/shared/gameState";
+import { MapState, PlayerState } from "@dragon-daycare/shared/gameState";
 import { Spring } from "../utils/spring";
 import { Easing } from "../utils/smoothValue";
 import vertexShader from "./player.vert?raw";
 import fragmentShader from "./player.frag?raw";
+import { playDashSound, playStickyMoveSound } from "../utils/soundPlayers";
 
 const ASSETS = Promise.all([loadTexture("/dragon/dragon-idle.png")]);
 
@@ -100,7 +101,8 @@ class PlayerObject extends THREE.Group {
   private turnGroup = new THREE.Group();
   private squashGroup = new THREE.Group();
   private squashSpring = Spring(0, 0, 5, 0.6, 0.7);
-
+  private wasMoving = false;
+  private mapState: MapState | null = null;
   constructor(
     [bodyTexture]: Awaited<typeof ASSETS>,
     gameStateProvider: AbstractGameStateProvider,
@@ -133,13 +135,31 @@ class PlayerObject extends THREE.Group {
     this.unsubscribes.push(
       gameStateProvider.subscribe((v) => this.onNewGameState(v))
     );
+
+    this.unsubscribes.push(
+      gameStateProvider.subscribeMap((v) => (this.mapState = v))
+    );
   }
 
   onNewGameState(gameState: GameState): void {
     const playerState = gameState.players[this.index];
 
     this.transform = stepPlayerTransform(this.transform, playerState);
+    const tile =
+      this.mapState?.tiles[
+        playerState.pos[1] * this.mapState.width + playerState.pos[0]
+      ];
+    if (
+      tile?.isSticky &&
+      this.transform.prevPos &&
+      !areCoordEqual(playerState.pos, this.transform.prevPos)
+    ) {
+      playStickyMoveSound(true);
+    } else if (this.wasMoving != playerState.isMoving) {
+      playDashSound(this.wasMoving);
+    }
 
+    this.wasMoving = playerState.isMoving;
     if (playerState.isMoving) {
       Spring.shift(this.squashSpring, 0.2, 0);
     } else {
@@ -148,10 +168,6 @@ class PlayerObject extends THREE.Group {
   }
 
   update(delta) {
-    if (this.transform.nextPos === null) {
-      return;
-    }
-
     const { pos, angle } = advancePlayerTransform(this.transform, delta);
     Spring.simulate(this.squashSpring, delta / 1000000);
 
