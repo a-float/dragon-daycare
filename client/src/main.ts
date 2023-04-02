@@ -13,6 +13,7 @@ import { makePlayerObject } from "./objects/PlayerObject";
 import UpdatableSystem from "./systems/UpdatableSystem";
 import EggEntity from "./entities/EggEntity";
 import { makeEggObject } from "./objects/EggObject";
+// import NetworkGameStateProvider from "./gameState/networkGameStateProvider";
 
 // const createPlayerMesh = (color: THREE.ColorRepresentation) => {
 //   const geometry = new THREE.BoxGeometry(1, 1, 1);
