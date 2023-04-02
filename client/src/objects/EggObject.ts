@@ -37,15 +37,13 @@ class EggObject extends THREE.Group {
   private playerHoldFactor = new SmoothValue(0, Easing.easeOutQuad);
 
   constructor(
-    [
-      eggBase,
-      eggDone01,
-      eggDone02,
-      eggDone03,
-      eggCrack01,
-      eggCrack02,
-      eggCrack03,
-    ]: Awaited<typeof ASSETS>,
+    [eggBase]: // eggDone01,
+    // eggDone02,
+    // eggDone03,
+    // eggCrack01,
+    // eggCrack02,
+    // eggCrack03,
+    Awaited<typeof ASSETS>,
     private eggId: string,
     gameStateProvider: AbstractGameStateProvider
   ) {

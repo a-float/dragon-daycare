@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { Disposable } from "./disposable";
+import { Disposable } from "./disposable.js";
 
 class StickyFloor extends THREE.Group implements Disposable {
   geo: THREE.BoxGeometry;

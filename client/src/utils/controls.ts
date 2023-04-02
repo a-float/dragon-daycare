@@ -1,4 +1,4 @@
-import { Controls } from '../components/SteerableComponent';
+import { Controls } from "../components/SteerableComponent.js";
 
 const controls = {
   one: {

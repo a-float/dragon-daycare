@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { SVGLoader } from "three-stdlib/loaders/SVGLoader.js";
-import loadingManager from "../loadingManager";
+import loadingManager from "../loadingManager.js";
 
 // instantiate a loader
 const loader = new SVGLoader(loadingManager);

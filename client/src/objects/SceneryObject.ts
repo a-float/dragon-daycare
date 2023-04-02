@@ -1,10 +1,10 @@
 import * as THREE from "three";
-import { MapState } from "../../../shared/gameState";
-import { Disposable } from "./disposable";
+import { MapState } from "../../../shared/gameState.js";
+import { Disposable } from "./disposable.js";
 
-import WallObject from "./WallObject";
-import DeviceObject from "./DeviceObject";
-import StickyFloor from "./StickyFloorObject";
+import WallObject from "./WallObject.js";
+import DeviceObject from "./DeviceObject.js";
+import StickyFloor from "./StickyFloorObject.js";
 
 class SceneryObject extends THREE.Group implements Disposable {
   disposableChildren: Disposable[] = [];

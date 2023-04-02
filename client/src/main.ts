@@ -72,6 +72,7 @@ const gameStateProvider: AbstractGameStateProvider =
 
 // const player1Mesh = createPlayerMesh("#cc2222");
 // const player2Mesh = createPlayerMesh("#2222cc");
+// @ts-ignore
 const world = new ECS();
 world.addSystem(new KeyboardSystem(gameStateProvider));
 world.addSystem(new UpdatableSystem());

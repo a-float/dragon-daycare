@@ -277,7 +277,7 @@ export const updateState = (
   events: UserEvent[]
 ) => {
   events.forEach((e) => applyUserEvent(gameState, mapState, e));
-  const playersThatMoved = movePlayers(gameState, mapState);
+  movePlayers(gameState, mapState);
   gameState.eggs.forEach((egg) => updateEggState(egg, mapState));
   // TODO update everyone on who moved where
 };

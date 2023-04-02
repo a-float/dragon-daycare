@@ -1,6 +1,6 @@
 import * as THREE from "three";
-import { Disposable } from "./disposable";
-import { Device } from "../../../shared/gameState";
+import { Disposable } from "./disposable.js";
+import { Device } from "../../../shared/gameState.js";
 
 const colors: Record<Device, THREE.ColorRepresentation> = {
   dryer: "orange",

@@ -3,9 +3,9 @@ import {
   Controls,
   SteerableComponent,
   SteerControlsComponent,
-} from "../components/SteerableComponent";
-import { UpdatableComponent } from "../components/UpdatableComponent";
-import PlayerObject from "../objects/PlayerObject";
+} from "../components/SteerableComponent.js";
+import { UpdatableComponent } from "../components/UpdatableComponent.js";
+import PlayerObject from "../objects/PlayerObject.js";
 
 export default class PlayerEntity extends Entity {
   constructor(

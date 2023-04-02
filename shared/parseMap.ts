@@ -1,4 +1,5 @@
-import { MapState, TileCoord } from "./gameState.js";
+import { MapState } from "./gameState.js";
+import { TileCoord } from "./tileCoord.js";
 
 const parseMap = (text: string): MapState => {
   text = text.replaceAll(" ", "");
