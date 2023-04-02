@@ -4,7 +4,6 @@ const parseMap = (text: string): MapState => {
   text = text.replaceAll(" ", "");
   const startReg = /[\s]*([\S\n]+)\n/.exec(text);
   text = startReg?.[1] as string;
-  console.log(text);
 
   const lines = text.split(/\r?\n/);
   const playerStarts: { [key: number]: TileCoord } = {};
@@ -18,11 +17,11 @@ const parseMap = (text: string): MapState => {
       else if (c.match(/^\d$/)) {
         playerStarts[parseInt(c)] = [idx % width, Math.floor(idx / width)];
         return { isWall: false };
-      } else if (c === "F") return { isWall: true, device: "furnace" } as const;
-      else if (c === "f") return { isWall: true, device: "freezer" } as const;
-      else if (c === "D")
+      } else if (c === "T") return { isWall: true, device: "furnace" } as const;
+      else if (c === "t") return { isWall: true, device: "freezer" } as const;
+      else if (c === "M")
         return { isWall: true, device: "moisturizer" } as const;
-      else if (c === "d") return { isWall: true, device: "dryer" } as const;
+      else if (c === "m") return { isWall: true, device: "dryer" } as const;
       else {
         throw new Error(`Unexpected character while loading the map: "${c}"`);
       }

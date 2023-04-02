@@ -1,5 +1,5 @@
 import { GameState, MapState } from "../../../shared/gameState";
-import { UserEvent } from "./userEvent";
+import { UserEvent } from "../../../shared/userEvent";
 
 type Listener<T> = (value: T) => void;
 

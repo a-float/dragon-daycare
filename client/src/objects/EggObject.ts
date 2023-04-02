@@ -1,15 +1,19 @@
 import * as THREE from "three";
 import loadSvg from "../utils/loadSvg";
-import { GameState } from "../gameState/gameState";
 import AbstractGameStateProvider from "../gameState/abstractGameStateProvider";
+import {
+  Device,
+  EggState,
+  GameState,
+  MapState,
+  TICK_INVERVAL,
+} from "../../../shared/gameState";
 
 const ASSETS = Promise.all([loadSvg("/dragon/dragon-idle.svg")]);
 
-const colors = ["#3b74ba", "#f04e32", "#f0609e", "#fbad18"] as const;
-
 class EggObject extends THREE.Group {
   unsubscribes: (() => unknown)[] = [];
-
+  private mapState?: MapState;
   constructor(
     [bodySvg]: Awaited<typeof ASSETS>,
     private eggId: string,
@@ -41,6 +45,11 @@ class EggObject extends THREE.Group {
     } else {
       this.position.set(...eggState.pos, 0);
     }
+    console.log({
+      temp: Math.round(eggState.temp * 1000) / 1000,
+      wetness: Math.round(eggState.wetness * 1000) / 1000,
+      hp: Math.round(eggState.hp * 1000) / 1000,
+    });
   }
 
   dispose() {

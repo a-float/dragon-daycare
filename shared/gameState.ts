@@ -54,7 +54,7 @@ export const GameState = z.object({
   eggs: z.array(EggState),
 });
 
-type Device = z.infer<typeof Device>;
+export type Device = z.infer<typeof Device>;
 export const Device = z.union([
   z.literal("furnace"),
   z.literal("freezer"),
@@ -248,13 +248,36 @@ const movePlayers = (gameState: GameState, mapState: MapState): number[] => {
   return playersThatMoved;
 };
 
+const clamp = (min: number, val: number, max: number) =>
+  Math.min(Math.max(val, min), max);
+
+const normalize = (val: number) =>
+  Math.abs(val) < 0.0001 ? 0 : val / Math.abs(val);
+
+const updateEggState = (egg: EggState, mapState: MapState) => {
+  egg.temp == normalize(0.5 - egg.temp) / TICK_INVERVAL / 20;
+  egg.wetness += normalize(0.5 - egg.wetness) / TICK_INVERVAL / 10;
+  if (Math.abs(egg.temp - 0.5) < 0.01) egg.temp = 0.5;
+  if (Math.abs(egg.wetness - 0.5) < 0.01) egg.wetness = 0.5;
+
+  const tileIdx = egg.pos[1] * mapState.width + egg.pos[0];
+  const device = mapState.tiles[tileIdx]?.device;
+  if (device === "freezer") egg.temp -= 0.7 / TICK_INVERVAL;
+  else if (device === "furnace") egg.temp += 0.7 / TICK_INVERVAL;
+  else if (device === "dryer") egg.wetness -= 0.8 / TICK_INVERVAL;
+  else if (device === "moisturizer") egg.wetness += 0.8 / TICK_INVERVAL;
+  egg.temp = clamp(0, egg.temp, 1);
+  egg.wetness = clamp(0, egg.wetness, 1);
+  egg.hp = clamp(0, egg.hp, 1);
+};
+
 export const updateState = (
   gameState: GameState,
   mapState: MapState,
   events: UserEvent[]
 ) => {
   events.forEach((e) => applyUserEvent(gameState, mapState, e));
-
   const playersThatMoved = movePlayers(gameState, mapState);
+  gameState.eggs.forEach((egg) => updateEggState(egg, mapState));
   // TODO update everyone on who moved where
 };

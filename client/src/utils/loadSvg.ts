@@ -32,7 +32,7 @@ function loadSvg(url: string) {
             const geometry = new THREE.ShapeGeometry(shape);
             const mesh = new THREE.Mesh(geometry, material);
             group.add(mesh);
-            console.log(geometry);
+            // console.log(geometry);
           }
         }
 
