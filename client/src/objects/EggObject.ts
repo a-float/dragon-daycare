@@ -189,12 +189,12 @@ class EggObject extends THREE.Group {
     }
 
     // EGG STATS DEBUG
-    console.log({
-      temp: Math.round(eggState.temp * 1000) / 1000,
-      wetness: Math.round(eggState.wetness * 1000) / 1000,
-      hp: Math.round(eggState.hp * 1000) / 1000,
-      progress: eggState.progress,
-    });
+    // console.log({
+    //   temp: Math.round(eggState.temp * 1000) / 1000,
+    //   wetness: Math.round(eggState.wetness * 1000) / 1000,
+    //   hp: Math.round(eggState.hp * 1000) / 1000,
+    //   progress: eggState.progress,
+    // });
   }
 
   update(delta: number) {

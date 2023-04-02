@@ -33,7 +33,7 @@ class SceneryObject extends THREE.Group implements Disposable {
         makeWallObject(x, y).then((w) => {
           this.add(w);
           this.disposableChildren.push(w);
-          console.log(`Making wall`, w);
+          // console.log(`Making wall`, w)  ;
         });
       }
     }

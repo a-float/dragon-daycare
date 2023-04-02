@@ -51,6 +51,8 @@ export const EggState = z.object({
 
 export type GameState = z.infer<typeof GameState>;
 export const GameState = z.object({
+  lifes: z.number().int(),
+  hatched: z.number().int(),
   players: z.array(PlayerState),
   eggs: z.array(EggState),
 });
@@ -80,6 +82,8 @@ export const MapState = z.object({
 
 export function createGameState(): GameState {
   return {
+    lifes: 3,
+    hatched: 0,
     players: [],
     eggs: [
       {
@@ -255,6 +259,10 @@ const resetEgg = (egg: EggState) => {
   egg.hp = 1;
   egg.progress = 0;
   egg.pos = [0, 0];
+  egg.hatchRange = {
+    temp: Math.random() < 0.5 ? [0.1, 0.3] : [0.6, 0.9],
+    wetness: Math.random() < 0.5 ? [0.0, 0.25] : [0.67, 0.9],
+  };
 };
 
 const clamp = (min: number, val: number, max: number) =>
@@ -263,12 +271,18 @@ const clamp = (min: number, val: number, max: number) =>
 const normalize = (val: number) =>
   Math.abs(val) < 0.0001 ? 0 : val / Math.abs(val);
 
-const updateEggState = (egg: EggState, mapState: MapState) => {
+const updateEggState = (
+  egg: EggState,
+  gameState: GameState,
+  mapState: MapState
+) => {
   if (egg.hp <= 0 || egg.progress >= 1) {
     if (egg.hp <= 0) {
       console.log("Egg broken");
+      gameState.lifes -= 1;
     } else if (egg.progress >= 1) {
       console.log("Egg hatched!");
+      gameState.hatched += 1;
     }
     resetEgg(egg);
     let pos: TileCoord;
@@ -335,6 +349,6 @@ export const updateState = (
     pickUpLyingEgg(player, i, gameState)
   );
   movePlayers(gameState, mapState);
-  gameState.eggs.forEach((egg) => updateEggState(egg, mapState));
+  gameState.eggs.forEach((egg) => updateEggState(egg, gameState, mapState));
   // TODO update everyone on who moved where
 };
