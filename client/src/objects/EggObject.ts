@@ -44,13 +44,15 @@ class EggObject extends THREE.Group {
   private doneTextures: THREE.Texture[];
 
   constructor(
-    [eggBase]: // eggDone01,
-    // eggDone02,
-    // eggDone03,
-    // eggCrack01,
-    // eggCrack02,
-    // eggCrack03,
-    Awaited<typeof ASSETS>,
+    [
+      eggBase,
+      eggDone01,
+      eggDone02,
+      eggDone03,
+      eggCrack01,
+      eggCrack02,
+      eggCrack03,
+    ]: Awaited<typeof ASSETS>,
     private eggId: string,
     gameStateProvider: AbstractGameStateProvider
   ) {
@@ -110,7 +112,7 @@ class EggObject extends THREE.Group {
   //     if (progress > (i + 1) / (this.crackTextures.length + 1)) {
   //       (this.doneMesh.material as any).map = this.doneTextures[i]; // TODO hacky typescript
   //       this.doneMesh.material
-  //       console.log("changing done egg map"); 
+  //       console.log("changing done egg map");
   //       break;
   //     }
   //   }
