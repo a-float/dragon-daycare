@@ -18,6 +18,10 @@ const ASSETS = Promise.all([
   loadTexture("/egg/egg_crack-01.png"),
   loadTexture("/egg/egg_crack-02.png"),
   loadTexture("/egg/egg_crack-03.png"),
+  loadTexture("/egg_needs/hot.png"),
+  loadTexture("/egg_needs/cold.png"),
+  loadTexture("/egg_needs/wet.png"),
+  loadTexture("/egg_needs/dry.png"),
 ]);
 
 class EggObject extends THREE.Group {
@@ -42,6 +46,7 @@ class EggObject extends THREE.Group {
   >;
   private crackTextures: THREE.Texture[];
   private doneTextures: THREE.Texture[];
+  private statusBadges: Record<"dry" | "wet" | "cold" | "hot", THREE.Mesh>;
 
   constructor(
     [
@@ -52,6 +57,10 @@ class EggObject extends THREE.Group {
       eggCrack01,
       eggCrack02,
       eggCrack03,
+      hotImg,
+      coldImg,
+      wetImg,
+      dryImg,
     ]: Awaited<typeof ASSETS>,
     private eggId: string,
     gameStateProvider: AbstractGameStateProvider
@@ -65,6 +74,19 @@ class EggObject extends THREE.Group {
     this.doneMesh.visible = false;
     this.crackMesh = this.prepareMesh(geo, eggCrack01);
     this.crackMesh.visible = false;
+
+    const badgeGeo = new THREE.PlaneGeometry(0.8, 0.8);
+    this.statusBadges = {
+      dry: this.prepareMesh(badgeGeo, dryImg),
+      wet: this.prepareMesh(badgeGeo, wetImg),
+      cold: this.prepareMesh(badgeGeo, coldImg),
+      hot: this.prepareMesh(badgeGeo, hotImg),
+    };
+    Object.values(this.statusBadges).forEach((m) => {
+      m.translateY(0.15);
+      m.translateX(0.02);
+      m.visible = false;
+    });
 
     this.unsubscribes.push(
       gameStateProvider.subscribe((v) => this.onNewGameState(v))
@@ -112,7 +134,7 @@ class EggObject extends THREE.Group {
   //     if (progress > (i + 1) / (this.crackTextures.length + 1)) {
   //       (this.doneMesh.material as any).map = this.doneTextures[i]; // TODO hacky typescript
   //       this.doneMesh.material
-  //       console.log("changing done egg map"); 
+  //       console.log("changing done egg map");
   //       break;
   //     }
   //   }
@@ -154,11 +176,22 @@ class EggObject extends THREE.Group {
       ...eggState.hatchRange.wetness
     );
 
+    Object.values(this.statusBadges).forEach((m) => {
+      m.visible = false;
+    });
     if (tempDiff !== 0 || wetnessDiff !== 0) {
       if (Math.abs(tempDiff) > Math.abs(wetnessDiff)) {
+        (tempDiff > 0
+          ? this.statusBadges.hot
+          : this.statusBadges.cold
+        ).visible = true;
         console.log(tempDiff > 0 ? "Too hot" : "Too cold");
       } else {
         console.log(wetnessDiff > 0 ? "Too wet" : "Too dry");
+        (wetnessDiff > 0
+          ? this.statusBadges.wet
+          : this.statusBadges.dry
+        ).visible = true;
       }
     }
 
