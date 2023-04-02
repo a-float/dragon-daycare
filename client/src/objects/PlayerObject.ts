@@ -12,10 +12,13 @@ import AbstractGameStateProvider from "../gameState/abstractGameStateProvider";
 import { PlayerState } from "@dragon-daycare/shared/gameState";
 import { Spring } from "../utils/spring";
 import { Easing } from "../utils/smoothValue";
+import vertexShader from "./player.vert?raw";
+import fragmentShader from "./player.frag?raw";
 
 const ASSETS = Promise.all([loadTexture("/dragon/dragon-idle.png")]);
 
-const colors = ["#3b74ba", "#f04e32", "#f0609e", "#fbad18"] as const;
+const colors = [0, 0.35, 0.5, 0.6] as const;
+// const colors = ["#3b74ba", "#f04e32", "#f0609e", "#fbad18"] as const;
 
 export type PlayerTransform = {
   prevPos: TileCoord | null;
@@ -105,17 +108,21 @@ class PlayerObject extends THREE.Group {
   ) {
     super();
 
+    let uniforms = {
+      hueShift: { type: "float", value: colors[index] },
+      map: { type: "t", value: bodyTexture },
+    };
+
+    let material = new THREE.ShaderMaterial({
+      uniforms: uniforms,
+      fragmentShader: fragmentShader,
+      vertexShader: vertexShader,
+      transparent: true,
+    });
+
     // const geo = new THREE.BoxGeometry(1, 1, 1);
     const geo = new THREE.PlaneGeometry(1, 1);
-    const mesh = new THREE.Mesh(
-      geo,
-      // new THREE.MeshBasicMaterial({ color: "#0000ff" })
-      new THREE.MeshBasicMaterial({
-        map: bodyTexture,
-        transparent: true,
-        premultipliedAlpha: false,
-      })
-    );
+    const mesh = new THREE.Mesh(geo, material);
     mesh.scale.setScalar(1.3);
     mesh.rotateX(Math.PI);
 
@@ -143,8 +150,6 @@ class PlayerObject extends THREE.Group {
   update(delta) {
     const { pos, angle } = advancePlayerTransform(this.transform, delta);
     Spring.simulate(this.squashSpring, delta / 1000000);
-
-    console.log(this.squashSpring);
 
     this.squashGroup.scale.set(
       1 - this.squashSpring.currX,
