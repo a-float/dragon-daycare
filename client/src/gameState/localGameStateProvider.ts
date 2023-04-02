@@ -13,7 +13,7 @@ class LocalGameStateProvider extends AbstractGameStateProvider {
     super();
 
     this.mapState = maps.MAP_0;
-    this.gameState = createGameState(this.mapState);
+    this.gameState = createGameState();
 
     console.log(this.mapState);
 
