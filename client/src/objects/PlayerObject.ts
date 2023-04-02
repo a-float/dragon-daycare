@@ -10,6 +10,8 @@ import AbstractGameStateProvider from "../gameState/abstractGameStateProvider";
 
 const ASSETS = Promise.all([loadTexture("/dragon/dragon-idle.png")]);
 
+const colors = ["#3b74ba", "#f04e32", "#f0609e", "#fbad18"] as const;
+
 class PlayerObject extends THREE.Group {
   unsubscribes: (() => unknown)[] = [];
 
@@ -37,6 +39,7 @@ class PlayerObject extends THREE.Group {
     );
     mesh.scale.setScalar(1.3);
     mesh.rotateX(Math.PI);
+
     this.add(mesh);
 
     this.unsubscribes.push(

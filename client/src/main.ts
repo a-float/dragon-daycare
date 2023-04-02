@@ -11,6 +11,8 @@ import AbstractGameStateProvider from "./gameState/abstractGameStateProvider";
 import PlayerEntity from "./entities/PlayerEntity";
 import { makePlayerObject } from "./objects/PlayerObject";
 import UpdatableSystem from "./systems/UpdatableSystem";
+import EggEntity from "./entities/EggEntity";
+import { makeEggObject } from "./objects/EggObject";
 
 // const createPlayerMesh = (color: THREE.ColorRepresentation) => {
 //   const geometry = new THREE.BoxGeometry(1, 1, 1);
@@ -34,7 +36,7 @@ import UpdatableSystem from "./systems/UpdatableSystem";
 // };
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color("#ff22ff");
+scene.background = new THREE.Color("#ddd");
 // const camera = new THREE.OrthographicCamera(
 //   0,
 //   window.innerWidth,
@@ -89,10 +91,10 @@ async function init() {
   //Players
   await createPlayers();
   // Egg
-  // const eggObj = await makeEggObject();
-  // const egg = new EggEntity(eggObj);
-  // gameAnchor.add(eggObj);
-  // world.addEntity(egg);
+  const eggObj = await makeEggObject("Egg#1", gameStateProvider);
+  const egg = new EggEntity(eggObj);
+  gameAnchor.add(eggObj);
+  world.addEntity(egg);
 
   // Scenery
   let scenery: SceneryObject | null = null;

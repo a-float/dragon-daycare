@@ -29,6 +29,13 @@ export default class KeyboardSystem extends System {
       this.moveDir = 0;
     } else if (KeyboardState.pressed(controls.down)) {
       this.moveDir = 2;
+    } else if (KeyboardState.pressed(controls.action)) {
+      this.gameStateProvider.sendEvent({
+        type: "action",
+        player: controlsIndex,
+      });
+      KeyboardState.clearKey(controls.action);
+      return;
     } else {
       this.moveDir = null;
     }
