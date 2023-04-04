@@ -31,7 +31,7 @@ class SceneryObject extends THREE.Group implements Disposable {
           this.disposableChildren.push(obj);
         });
       } else if (tile.isWall) {
-        makeWallObject(x, y).then((w) => {
+        makeWallObject(mapState, [x, y]).then((w) => {
           this.add(w);
           this.disposableChildren.push(w);
           // console.log(`Making wall`, w)  ;

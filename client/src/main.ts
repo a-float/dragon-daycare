@@ -59,6 +59,7 @@ const camera = new THREE.OrthographicCamera(
 );
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(2);
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
